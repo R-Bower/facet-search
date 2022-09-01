@@ -1,0 +1,19 @@
+{
+  "name": "@rbower/facets",
+  "version": "0.0.0",
+  "scripts": {
+    "test": "esno node_modules/.bin/mocha tests/**.spec.ts",
+    "watch": "tsc -P tsconfig.json -w"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.6",
+    "eslint": "8.22.0",
+    "eslint-config-rbower-typescript": "^1.0.8",
+    "esno": "^0.16.3",
+    "mocha": "^10.0.0",
+    "typescript": "4.7.4"
+  },
+  "packageManager": "yarn@3.2.3"
+}
