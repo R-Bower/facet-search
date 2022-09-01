@@ -3,10 +3,18 @@
   "version": "0.0.0",
   "scripts": {
     "test": "esno node_modules/.bin/mocha tests/**.spec.ts",
+    "compile": "tsc -P tsconfig.json",
     "watch": "tsc -P tsconfig.json -w"
+  },
+  "dependencies": {
+    "bitset": "^5.1.1",
+    "fastbitset": "^0.4.0",
+    "lodash-es": "^4.17.21",
+    "typedfastbitset": "^0.3.1"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",
+    "@types/lodash-es": "^4.17.6",
     "@types/mocha": "^9.1.1",
     "chai": "^4.3.6",
     "eslint": "8.22.0",

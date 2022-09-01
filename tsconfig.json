@@ -19,7 +19,7 @@
     "sourceMap": true,
     "strictBindCallApply": false,
     "strictNullChecks": true,
-    "strict": false,
+    "strict": true,
     "target": "ESNext"
   },
   "include": ["src/**/*", "scripts/**/*"]
