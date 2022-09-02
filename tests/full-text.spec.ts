@@ -3,10 +3,11 @@ import {expect} from "chai"
 import {FacetSearch} from "../src"
 import items from "./fixtures/items.json"
 
-describe("Full Text Search", () => {
+describe("fulltext search", () => {
   const searcher = new FacetSearch(items, {
     aggregations: {
       actors: {conjunction: true},
+      tags: {conjunction: true},
     },
     searchableFields: ["actors", "name"],
   })
@@ -22,5 +23,49 @@ describe("Full Text Search", () => {
     const result = searcher.search({query: "john"})
 
     expect(result.data.items).deep.eq([items[0], items[1]])
+  })
+
+  it("filters results based on query and empty filters", () => {
+    const result = searcher.search({
+      filters: {
+        tags: [],
+      },
+      query: "jeff",
+    })
+
+    expect(result.data.items).deep.eq([items[2]])
+  })
+
+  it("filters results based on query and filters - 1", () => {
+    const result = searcher.search({
+      filters: {
+        tags: ["e"],
+      },
+      query: "jeff",
+    })
+
+    expect(result.data.items).deep.eq([])
+  })
+
+  it("filters results based on query and filters - 2", () => {
+    const result = searcher.search({
+      filters: {
+        tags: ["a"],
+      },
+      query: "jeff",
+    })
+
+    expect(result.data.items).deep.eq([items[2]])
+  })
+
+  it("filters results based on query and filters - 3", () => {
+    const result = searcher.search({
+      filters: {
+        tags: ["a"],
+      },
+      query: "brad",
+    })
+
+    expect(result.data.items).deep.eq([items[1]])
   })
 })
