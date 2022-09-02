@@ -6,11 +6,12 @@ import {
   BitDataMap,
   BitSetDataMap,
   FacetData,
+  FilterValue,
   Item,
   SearchOptions,
 } from "./types"
 
-export const combinationIndices = function (facets: FacetData, filters) {
+export const combinationIndices = function (facets: FacetData, filters: any) {
   const indices: Record<string, BitSet> = {}
 
   mapValues(filters, (filter) => {
@@ -39,7 +40,7 @@ export const combinationIndices = function (facets: FacetData, filters) {
 export const matrix = (
   facets: FacetData & {is_temp_copied?: boolean},
   filters: any[] = [],
-) => {
+): FacetData => {
   const tempFacet = clone(facets)
 
   mapValues(tempFacet.bits_data, (values, key) => {
@@ -50,7 +51,7 @@ export const matrix = (
 
   tempFacet.is_temp_copied = true
 
-  let conjunctiveIndex: any
+  let conjunctiveIndex: BitSet
   const disjunctiveIndices = combinationIndices(facets, filters)
 
   /**
@@ -76,6 +77,8 @@ export const matrix = (
   })
 
   // cross all facets with conjunctive index
+  // @ts-expect-error the compiler doesn't evaluate the inner functions of
+  // mapValues in the block above?
   if (conjunctiveIndex) {
     mapValues(tempFacet.bits_data_temp, (values, key) => {
       mapValues(tempFacet.bits_data_temp[key], (facetIndices, key2) => {
@@ -216,18 +219,20 @@ export function indexFields<I extends Item>(
  * if there is no facet input then return null to not save resources for OR calculation
  * null means facets haven't matched searched items
  */
-export function facetIds<A extends string>(
+export function facetIds(
   facetData: BitSetDataMap,
-  filters: Partial<Record<A, Array<string | number>>>,
+  inputFilters: Record<string, FilterValue>,
 ): BitSet | undefined {
   let output = new BitSet([])
   let i = 0
 
-  mapValues(filters, function (filters, field) {
-    filters.forEach((filter) => {
-      ++i
-      output = output.or(facetData[field][filter])
-    })
+  mapValues(inputFilters, function (filters, field) {
+    if (filters) {
+      filters.forEach((filter) => {
+        ++i
+        output = output.or(facetData[field][filter])
+      })
+    }
   })
 
   if (i === 0) {
@@ -237,19 +242,18 @@ export function facetIds<A extends string>(
   return output
 }
 
-export function mergeAggregations<
-  I extends Item,
-  S extends string,
-  A extends string,
->(aggregations: Record<A, Aggregation>, input: SearchOptions<I, S, A>) {
+export function mergeAggregations<A extends string>(
+  aggregations: Record<A, Aggregation>,
+  inputFilters?: Record<string, FilterValue>,
+) {
   return mapValues(clone(aggregations), (val, key) => {
     if (!val.field) {
       val.field = key
     }
 
-    let filters = []
-    if (input.filters && input.filters[key]) {
-      filters = input.filters[key]
+    let filters: FilterValue = []
+    if (inputFilters && inputFilters[key]) {
+      filters = inputFilters[key]
     }
 
     val.filters = filters
@@ -258,8 +262,12 @@ export function mergeAggregations<
   })
 }
 
-export function inputToFacetFilters(input, config) {
-  const filters: [string, any][] = []
+export function inputToFacetFilters<
+  I extends Item,
+  S extends string,
+  A extends string,
+>(input: SearchOptions<I, S, A>, config: Record<string, Aggregation>) {
+  const filters: any[] = []
 
   mapValues(input.filters, function (values, key) {
     if (values && values.length) {
@@ -279,4 +287,8 @@ export function inputToFacetFilters(input, config) {
   })
 
   return filters
+}
+
+export function ensureArray<K>(field: K | K[]): K[] {
+  return Array.isArray(field) ? field : [field]
 }

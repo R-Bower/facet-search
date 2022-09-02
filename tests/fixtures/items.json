@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "movieId": 1,
     "name": "movie1",
     "tags": ["a", "b", "c", "d"],
     "actors": ["john", "alex"],
@@ -9,7 +9,7 @@
     "category": "drama"
   },
   {
-    "id": 2,
+    "movieId": 2,
     "name": "movie2",
     "tags": ["a", "e", "f"],
     "actors": ["john", "brad"],
@@ -18,7 +18,7 @@
     "category": "comedy"
   },
   {
-    "id": 3,
+    "movieId": 3,
     "name": "movie3",
     "tags": ["a", "c"],
     "actors": ["jeff"],
@@ -27,7 +27,7 @@
     "category": "comedy"
   },
   {
-    "id": 4,
+    "movieId": 4,
     "name": "movie4",
     "tags": ["c", "a", "z"],
     "actors": ["jean"],

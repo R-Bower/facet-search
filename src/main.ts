@@ -41,7 +41,7 @@ export class FacetSearch<
         ...input,
         aggregations: mergeAggregations(
           this.configuration.aggregations ?? ({} as Record<A, Aggregation>),
-          input,
+          input.filters,
         ),
       },
       this.configuration,

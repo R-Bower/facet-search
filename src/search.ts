@@ -100,7 +100,11 @@ export function search<
 
   return {
     data: {
-      aggregations: getBuckets(facetResult, input, configuration.aggregations),
+      aggregations: getBuckets(
+        facetResult,
+        input.filters ?? {},
+        configuration.aggregations,
+      ),
       allFilteredItems,
       items: filteredItems,
     },

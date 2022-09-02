@@ -89,17 +89,21 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
   it("checks matrix with disjunctive values (ittocean case)", () => {
     const data = indexFields(items, fields)
 
-    let result = combinationIndices(data, [[["a", 1]], [["b", 2]], [["c", 3]]])
+    const result = combinationIndices(data, [
+      [["a", 1]],
+      [["b", 2]],
+      [["c", 3]],
+    ])
     expect([1, 2, 4, 6, 7]).deep.eq(result.a.toArray())
     expect([1, 4, 6, 9]).deep.eq(result.b.toArray())
     expect([1, 2, 3, 4, 5, 6, 7, 8, 9]).deep.eq(result.c.toArray())
 
-    result = matrix(data, [[["a", 1]], [["b", 2]], [["c", 3]]])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([1, 4, 6])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([9])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([1, 4, 6])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([2, 7])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([1, 4, 6])
+    const result2 = matrix(data, [[["a", 1]], [["b", 2]], [["c", 3]]])
+    expect(result2.bits_data_temp.a["1"].toArray()).deep.eq([1, 4, 6])
+    expect(result2.bits_data_temp.a["2"].toArray()).deep.eq([9])
+    expect(result2.bits_data_temp.b["2"].toArray()).deep.eq([1, 4, 6])
+    expect(result2.bits_data_temp.b["3"].toArray()).deep.eq([2, 7])
+    expect(result2.bits_data_temp.c["3"].toArray()).deep.eq([1, 4, 6])
   })
 })
 

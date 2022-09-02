@@ -5,6 +5,8 @@ export interface Item extends Record<string, unknown> {
   id?: string
 }
 
+export type FilterValue = Array<string | number>
+
 export interface Pagination {
   page: number
   per_page: number
@@ -20,7 +22,7 @@ export interface Sorting<I extends Record<string, unknown>> {
 
 export interface AggregationOptions<A extends string> {
   conjunction?: boolean
-  filters?: Record<string, string[]>
+  filters?: Record<string, FilterValue>
   name: A
   /** @default 1 */
   page?: number
@@ -38,7 +40,7 @@ export interface SearchOptions<
   _ids?: number[]
   aggregations?: Record<A, Aggregation>
   filter?: (item: I) => boolean
-  filters?: Partial<Record<A, Array<string | number>>>
+  filters?: Record<string, FilterValue>
   ids?: number[]
   /** @default false */
   isExactSearch?: boolean
@@ -68,6 +70,7 @@ export type Aggregation = {
   chosenFiltersOnTop?: boolean
   conjunction?: boolean
   field?: string
+  filters?: FilterValue
   hideZeroDocCount?: boolean
   /** @default 'asc' */
   order?: Order[] | Order
@@ -86,16 +89,6 @@ export interface Configuration<
   aggregations?: Record<A, Aggregation>
   /** @default [] */
   sortings?: Record<S, Sorting<I>>
-}
-
-export interface SimilarOptions<I extends Item> {
-  field: keyof I & string
-  /** @default 0 */
-  minimum?: number | undefined
-  /** @default 1 */
-  page?: number | undefined
-  /** @default 10 */
-  per_page?: number | undefined
 }
 
 export type BitDataMap = Record<string, Record<string, number[]>>

@@ -1,20 +1,25 @@
 import {chain, mapValues, orderBy} from "lodash-es"
 
-import {Aggregation, Buckets, FacetData, Item, Order} from "./types"
+import {ensureArray} from "./helpers"
+import {
+  Aggregation,
+  Buckets,
+  FacetData,
+  FilterValue,
+  Item,
+  Order,
+} from "./types"
 
 export function getBuckets<I extends Item>(
   data: FacetData,
-  input: Partial<Record<string | number, Array<string | number>>>,
-  aggregations: Record<string, Aggregation> = {} as any,
+  inputFilters: Record<string, FilterValue>,
+  aggregations: Record<string, Aggregation> = {},
 ): Record<string, {buckets: Buckets<I>; name: string; position: number}> {
   let position = 1
 
   return mapValues(data.bits_data_temp, (v, k: string) => {
-    let order
-    let sort
-    let size
-    let chosenFiltersOnTop = false
-    let hideZeroDocCount = false
+    let order, sort, size
+    let chosenFiltersOnTop, hideZeroDocCount: boolean
 
     if (aggregations[k]) {
       order = aggregations[k].order
@@ -26,14 +31,14 @@ export function getBuckets<I extends Item>(
 
     const buckets: Buckets<I> = chain(v)
       .toPairs()
-      .map((v2) => {
-        let filters = []
+      .map(([key, bitset]) => {
+        let filters: FilterValue = []
 
-        if (input && input.filters && k in input.filters) {
-          filters = input.filters[k]
+        if (inputFilters[k]) {
+          filters = inputFilters[k]
         }
 
-        const doc_count = v2[1].toArray().length
+        const doc_count = bitset.toArray().length
 
         if (hideZeroDocCount && doc_count === 0) {
           return
@@ -41,8 +46,8 @@ export function getBuckets<I extends Item>(
 
         return {
           doc_count,
-          key: v2[0],
-          selected: filters.indexOf(v2[0]) !== -1,
+          key,
+          selected: filters.indexOf(key) !== -1,
         }
       })
       .compact()
@@ -53,14 +58,14 @@ export function getBuckets<I extends Item>(
 
     if (Array.isArray(sort)) {
       iteratees = sort || ["key"]
-      sortOrder = order || ["asc"]
+      sortOrder = order ? ensureArray(order) : ["asc"]
     } else {
       if (sort === "term" || sort === "key") {
         iteratees = ["key"]
-        sortOrder = [order || "asc"]
+        sortOrder = order ? ensureArray(order) : ["asc"]
       } else {
         iteratees = ["doc_count", "key"]
-        sortOrder = [order || "desc", "asc"]
+        sortOrder = order ? [...ensureArray(order), "asc"] : ["desc", "asc"]
       }
 
       if (chosenFiltersOnTop) {
