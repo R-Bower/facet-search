@@ -1,90 +1,71 @@
 import BitSet from "bitset"
-import {clone, mapValues} from "lodash"
+import {clone, mapValues} from "lodash-es"
 
 import {facetIds, indexFields, inputToFacetFilters, matrix} from "./helpers"
-import {
-  Aggregation,
-  Configuration,
-  FacetData,
-  Item,
-  SearchOptions,
-} from "./types"
+import {Aggregation, Configuration, FacetData, Item, SearchInput} from "./types"
 
 /**
  * responsible for making faceted search
  */
 export class Facets<I extends Item, S extends string, A extends string> {
-  config: Record<A, Aggregation>
-  facets: FacetData
-  items: I[]
-  _items_map: Record<number, I>
-  _ids: number[]
-  ids_map: Record<string, number>
-  _bits_ids: BitSet
+  private readonly config: Record<A, Aggregation>
+  private readonly facets: FacetData
+  private readonly itemsMap: Record<number, I & {_id: number}>
+  private readonly items: Array<I & {_id: number}>
+  private readonly idsMap: Record<string, number>
+  private readonly bitsIds: BitSet
 
   constructor(items: I[], configuration: Configuration<I, S, A> = {}) {
     configuration = configuration || {}
     configuration.aggregations =
       configuration.aggregations || ({} as Record<A, Aggregation>)
-    this.items = items
     this.config = configuration.aggregations
-    this.facets = indexFields(items, Object.keys(this.config))
+    const {facets, ids, indexedItems, itemsMap} = indexFields(
+      items,
+      Object.keys(this.config),
+    )
+    this.items = indexedItems
+    this.facets = facets
+    this.itemsMap = itemsMap
 
-    this._items_map = {}
-    this._ids = []
-
-    let i = 1
-    items.map((item) => {
-      this._ids.push(i)
-      this._items_map[i] = item
-      item._id = i
-      ++i
-    })
-
-    this.ids_map = {}
-
-    if (items) {
-      items.forEach((v: Item & {id?: string}) => {
+    this.idsMap = {}
+    if (this.items.length) {
+      this.items.forEach((v: Item & {id?: string}) => {
         if (v.id && v._id) {
-          this.ids_map[v.id] = v._id
+          this.idsMap[v.id] = v._id
         }
       })
     }
 
-    this._bits_ids = new BitSet(this._ids)
+    this.bitsIds = new BitSet(ids)
   }
 
-  bits_ids(ids?: number[]) {
-    if (ids) {
-      return new BitSet(ids)
-    }
-    return this._bits_ids
+  getBitIds() {
+    return this.bitsIds
   }
 
-  get_item(_id: number) {
-    return this._items_map[_id]
+  getItems(): Array<I & {_id: number}> {
+    return this.items
   }
 
-  internal_ids_from_ids_map(ids: number[]) {
-    return ids.map((v) => {
-      return this.ids_map[v]
-    })
+  getItem(_id: number) {
+    return this.itemsMap[_id]
   }
 
   /*
    *
    * ids is optional only when there is query
    */
-  search(input: SearchOptions<I, S, A>, data: {queryIds?: BitSet} = {}) {
+  search(input: SearchInput<I, S, A>, data: {queryIds?: BitSet} = {}) {
     const config = this.config
 
     // consider removing clone
     const tempFacet = clone(this.facets)
 
     const filters = inputToFacetFilters(input, config)
-    const temp_data = matrix(this.facets, filters)
+    const tempData = matrix(this.facets, filters)
 
-    tempFacet.bitsDataTemp = temp_data.bitsDataTemp
+    tempFacet.bitsDataTemp = tempData.bitsDataTemp
 
     if (data.queryIds) {
       mapValues(tempFacet.bitsDataTemp, (values, key) => {

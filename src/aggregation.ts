@@ -1,23 +1,24 @@
-import {clone} from "lodash"
+import {clone} from "lodash-es"
 
 import {Facets} from "./facets"
 import {search} from "./search"
-import {Aggregation, AggregationOptions, Configuration} from "./types"
+import {
+  Aggregation,
+  AggregationOptions,
+  AggregationResult,
+  Configuration,
+  Item,
+} from "./types"
 
 /**
  * returns list of elements in specific facet
  * useful for autocomplete or list all aggregation options
  */
-export function aggregation<
-  I extends Record<string, unknown>,
-  S extends string,
-  A extends string,
->(
-  items: I[],
+export function aggregation<I extends Item, S extends string, A extends string>(
   options: AggregationOptions<A>,
   configuration: Configuration<I, S, A>,
   facets: Facets<I, S, A>,
-) {
+): AggregationResult<I> {
   const perPage = options.perPage || 10
   const page = options.page || 1
 
@@ -25,9 +26,7 @@ export function aggregation<
     options.name &&
     (!configuration.aggregations || !configuration.aggregations[options.name])
   ) {
-    throw new Error(
-      'Please define aggregation "'.concat(options.name, '" in config'),
-    )
+    throw new Error(`aggregation "${options.name}" is missing from config`)
   }
 
   const searchInput = clone(options)
@@ -45,7 +44,7 @@ export function aggregation<
 
   configuration.aggregations[options.name].size = 10000
 
-  const result = search(items, searchInput, configuration, facets)
+  const result = search(searchInput, configuration, facets)
   const buckets = result.data.aggregations[options.name].buckets
 
   return {

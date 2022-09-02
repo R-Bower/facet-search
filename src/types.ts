@@ -5,6 +5,10 @@ export interface Item extends Record<string, unknown> {
   id?: string
 }
 
+export interface IndexedItem extends Record<string, unknown> {
+  _id: number
+}
+
 export type FilterValue = Array<string | number>
 
 export interface Pagination {
@@ -31,13 +35,17 @@ export interface AggregationOptions<A extends string> {
   query?: string
 }
 
-export interface SearchOptions<
+export type FullTextSearchInput = {
+  query: string
+  searchableFields: string[]
+}
+
+export interface SearchInput<
   I extends Item,
   S extends string,
   A extends string,
 > {
   /** A custom function to filter values */
-  _ids?: number[]
   aggregations?: Record<A, Aggregation>
   filters?: Record<string, FilterValue>
   ids?: number[]
@@ -47,19 +55,20 @@ export interface SearchOptions<
   page?: number
   /** @default 12 */
   perPage?: number
+  query?: string
   /** The name of a sort defined in the configuration's sortings, or a new custom one */
   sort?: S | Sorting<I>
 }
 
 export interface Bucket<I extends Item> {
-  doc_count: number
+  docCount: number
   key: keyof I & string
   selected: boolean
 }
 
 export type Buckets<I extends Item> = Array<Bucket<I>>
 
-export type Sort = "term" | "count" | "selected" | "key" | "doc_count"
+export type Sort = "term" | "count" | "selected" | "key" | "docCount"
 
 export type Aggregation = {
   chosenFiltersOnTop?: boolean
@@ -82,6 +91,7 @@ export interface Configuration<
   A extends string,
 > {
   aggregations?: Record<A, Aggregation>
+  searchableFields?: string[]
   /** @default [] */
   sortings?: Record<S, Sorting<I>>
 }
@@ -90,9 +100,23 @@ export type BitDataMap = Record<string, Record<string, number[]>>
 
 export type BitSetDataMap = Record<string, Record<string, BitSet>>
 
-export type FacetData = {
+export interface FacetData {
   bitsData: BitSetDataMap
   bitsDataTemp: BitSetDataMap
   data: BitDataMap
   ids?: BitSet
+}
+
+export interface IndexFieldsResult<I extends Item> {
+  facets: FacetData
+  ids: number[]
+  indexedItems: Array<I & {_id: number}>
+  itemsMap: Record<number, I & {_id: number}>
+}
+
+export interface AggregationResult<I extends Item> {
+  data: {
+    buckets: Buckets<I & {_id: number}>
+  }
+  pagination: Pagination
 }

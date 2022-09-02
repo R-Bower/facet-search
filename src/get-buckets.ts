@@ -1,4 +1,4 @@
-import {chain, mapValues, orderBy} from "lodash"
+import {chain, mapValues, orderBy} from "lodash-es"
 
 import {ensureArray} from "./helpers"
 import {
@@ -38,14 +38,14 @@ export function getBuckets<I extends Item>(
           filters = inputFilters[k]
         }
 
-        const doc_count = bitset.toArray().length
+        const docCount = bitset.toArray().length
 
-        if (hideZeroDocCount && doc_count === 0) {
+        if (hideZeroDocCount && docCount === 0) {
           return
         }
 
         return {
-          doc_count,
+          docCount,
           key,
           selected: filters.indexOf(key) !== -1,
         }
@@ -64,7 +64,7 @@ export function getBuckets<I extends Item>(
         iteratees = ["key"]
         sortOrder = order ? ensureArray(order) : ["asc"]
       } else {
-        iteratees = ["doc_count", "key"]
+        iteratees = ["docCount", "key"]
         sortOrder = order ? [...ensureArray(order), "asc"] : ["desc", "asc"]
       }
 

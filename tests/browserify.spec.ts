@@ -117,8 +117,8 @@ describe("itemjs general tests", function () {
 
     const result = searcher.search()
     expect(result.data.items.length).eq(3)
-    expect(result.data.aggregations.tags.buckets[0].doc_count).eq(2)
-    expect(result.data.aggregations.tags.buckets[1].doc_count).eq(1)
+    expect(result.data.aggregations.tags.buckets[0].docCount).eq(2)
+    expect(result.data.aggregations.tags.buckets[1].docCount).eq(1)
   })
 
   it("makes aggregations when configuration supplied", () => {
@@ -163,7 +163,7 @@ describe("itemjs general tests", function () {
     expect(result.data.items.length).eq(3)
     //assert.equal(result.data.aggregations.tags.name, 'tags');
     expect(result.data.aggregations.tags.buckets.length).eq(1)
-    expect(result.data.aggregations.tags.buckets[0].doc_count).eq(3)
+    expect(result.data.aggregations.tags.buckets[0].docCount).eq(3)
   })
 
   it("makes aggregations for undefined field", () => {

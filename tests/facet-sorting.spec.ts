@@ -89,12 +89,12 @@ describe("facet sorting", function () {
     ])
   })
 
-  it("sort by doc_count", () => {
+  it("sort by docCount", () => {
     const aggregation = new FacetSearch(items, {
       aggregations: {
         genres: {
           order: "desc",
-          sort: "doc_count",
+          sort: "docCount",
         },
       },
     }).aggregation({
@@ -131,12 +131,12 @@ describe("facet sorting", function () {
     ])
   })
 
-  it("sort by doc_count and key and order key desc", () => {
+  it("sort by docCount and key and order key desc", () => {
     const aggregation = new FacetSearch(items, {
       aggregations: {
         genres: {
           order: ["desc", "desc"],
-          sort: ["doc_count", "key"],
+          sort: ["docCount", "key"],
         },
       },
     }).aggregation({
@@ -224,7 +224,7 @@ describe("facet sorting", function () {
     ])
   })
 
-  it("excludes filters with zero doc_count if hide_zero_doc_count is true", () => {
+  it("excludes filters with zero docCount if hideZeroDocCount is true", () => {
     const aggregation = new FacetSearch(items, {
       aggregations: {
         genres: {

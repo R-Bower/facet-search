@@ -1,5 +1,5 @@
 import BitSet from "bitset"
-import {chain, clone, get, map, mapValues, sortBy} from "lodash-es"
+import {chain, clone, get, mapValues, orderBy, sortBy} from "lodash-es"
 
 import {
   Aggregation,
@@ -7,11 +7,13 @@ import {
   BitSetDataMap,
   FacetData,
   FilterValue,
+  IndexFieldsResult,
   Item,
-  SearchOptions,
+  SearchInput,
+  Sorting,
 } from "./types"
 
-export const combinationIndices = function (facets: FacetData, filters: any) {
+export function combinationIndices(facets: FacetData, filters: any) {
   const indices: Record<string, BitSet> = {}
 
   mapValues(filters, (filter) => {
@@ -37,10 +39,10 @@ export const combinationIndices = function (facets: FacetData, filters: any) {
 /*
  * returns facets and ids
  */
-export const matrix = (
+export function matrix(
   facets: FacetData & {is_temp_copied?: boolean},
   filters: any[] = [],
-): FacetData => {
+): FacetData {
   const tempFacet = clone(facets)
 
   mapValues(tempFacet.bitsData, (values, key) => {
@@ -125,8 +127,11 @@ export const matrix = (
 export function indexFields<I extends Item>(
   items: I[],
   fields: string[],
-): FacetData {
+): IndexFieldsResult<I> {
   fields = fields || []
+
+  const ids: number[] = []
+  const itemsMap: Record<number, I & {_id: number}> = {}
 
   const facets: FacetData = {
     bitsData: {} as BitSetDataMap,
@@ -135,25 +140,14 @@ export function indexFields<I extends Item>(
   }
 
   let i = 1
-
-  items = map(items, (item) => {
-    if (!item["_id"]) {
-      item["_id"] = i
+  const indexedItems: Array<I & {_id: number}> = chain(items)
+    .map((originalItem: I) => {
+      // add _id
+      const item = {...originalItem, _id: i}
+      ids.push(i)
+      itemsMap[i] = item
       ++i
-    }
-
-    return item
-  })
-
-  // replace chain with forEach
-
-  chain(items)
-    .map((item: Item) => {
       fields.forEach((field: string) => {
-        if (!item || !item._id) {
-          return
-        }
-
         if (!facets.data[field]) {
           facets.data[field] = {}
         }
@@ -177,7 +171,6 @@ export function indexFields<I extends Item>(
               facets.data[field][v] = []
             }
 
-            // @ts-expect-error item._id is not detected properly
             facets.data[field][v].push(item._id)
           })
         } else {
@@ -206,7 +199,7 @@ export function indexFields<I extends Item>(
     })
   })
 
-  return facets
+  return {facets, ids, indexedItems, itemsMap}
 }
 
 /**
@@ -261,7 +254,7 @@ export function inputToFacetFilters<
   I extends Item,
   S extends string,
   A extends string,
->(input: SearchOptions<I, S, A>, config: Record<string, Aggregation>) {
+>(input: SearchInput<I, S, A>, config: Record<string, Aggregation>) {
   const filters: any[] = []
 
   mapValues(input.filters, function (values, key) {
@@ -286,4 +279,23 @@ export function inputToFacetFilters<
 
 export function ensureArray<K>(field: K | K[]): K[] {
   return Array.isArray(field) ? field : [field]
+}
+
+/**
+ * return items by sort
+ */
+export function sortItems<I extends Item, S extends string>(
+  items: I[],
+  sort: S | Sorting<I>,
+  sortings?: Record<S, Sorting<I>>,
+): I[] {
+  if (typeof sort === "string" && sortings && sortings[sort]) {
+    sort = sortings[sort]
+  }
+
+  if (typeof sort !== "string" && sort.field) {
+    return orderBy(items, sort.field, sort.order || "asc")
+  }
+
+  return items
 }

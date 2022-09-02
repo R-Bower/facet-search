@@ -36,8 +36,8 @@ describe("search", () => {
     expect(result.data.items[0].in_cinema).eq(false)
 
     expect(result.data.items[0].in_cinema).eq(false)
-    expect(result.data.aggregations.in_cinema.buckets[0].doc_count).eq(3)
-    expect(result.data.aggregations.in_cinema.buckets[1].doc_count).eq(1)
+    expect(result.data.aggregations.in_cinema.buckets[0].docCount).eq(3)
+    expect(result.data.aggregations.in_cinema.buckets[1].docCount).eq(1)
     expect(result.data.aggregations.in_cinema.buckets.length).eq(2)
   })
 
@@ -50,7 +50,7 @@ describe("search", () => {
     })
 
     expect(result.data.items.length).eq(2)
-    expect(result.data.aggregations.tags.buckets[0].doc_count).eq(2)
+    expect(result.data.aggregations.tags.buckets[0].docCount).eq(2)
   })
 
   it("makes search with empty filters", () => {

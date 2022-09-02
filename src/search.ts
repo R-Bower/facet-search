@@ -1,11 +1,12 @@
 import BitSet from "bitset"
-import {orderBy} from "lodash"
 
 import {Facets} from "./facets"
+import {fullTextSearch} from "./full-text-search"
 import {getBuckets} from "./get-buckets"
-import {Buckets, Configuration, SearchOptions, Sorting} from "./types"
+import {sortItems} from "./helpers"
+import {Buckets, Configuration, Item, SearchInput} from "./types"
 
-export interface SearchResult<I extends Record<string, unknown>> {
+export interface SearchResult<I extends Item> {
   data: {
     aggregations: Record<
       string,
@@ -21,13 +22,8 @@ export interface SearchResult<I extends Record<string, unknown>> {
   }
 }
 
-export function search<
-  I extends Record<string, unknown>,
-  S extends string,
-  A extends string,
->(
-  items: I[],
-  input: SearchOptions<I, S, A> = {},
+export function search<I extends Item, S extends string, A extends string>(
+  input: SearchInput<I, S, A> = {},
   configuration: Configuration<I, S, A>,
   facets: Facets<I, S, A>,
 ): SearchResult<I> {
@@ -35,17 +31,19 @@ export function search<
   const page = input.page || 1
   const isAllFilteredItems = input.isAllFilteredItems || false
 
-  let queryIds
+  let queryIds: BitSet | undefined
   // all ids bitmap
-  let filteredIndexesBitmap = facets.bits_ids()
-  let ids
+  let filteredIndexesBitmap = facets.getBitIds()
+  let ids: number[] | undefined
   let allFilteredItems: I[] | undefined
 
-  if (input._ids) {
-    queryIds = new BitSet(input._ids)
-    ids = input._ids
-  } else if (input.ids) {
-    ids = facets.internal_ids_from_ids_map(input.ids)
+  const {query} = input
+  const {searchableFields} = configuration
+  if (query?.length && searchableFields?.length) {
+    ids = fullTextSearch(facets.getItems(), {
+      query,
+      searchableFields,
+    })
     queryIds = new BitSet(ids)
   }
 
@@ -65,15 +63,18 @@ export function search<
   // -------------------------------------
   let filteredIndices = filteredIndexesBitmap.toArray()
 
-  let filteredItems: I[] | undefined = filteredIndices.map((_id: number) => {
-    return facets.get_item(_id)
-  })
+  let filteredItems: Array<I & {_id: number}> | undefined = filteredIndices.map(
+    (_id: number) => {
+      return facets.getItem(_id)
+    },
+  )
 
   /**
    * sorting items
    */
   let paginationApplied = false
   if (input.sort) {
+    // sorting takes precedence over search ranking
     filteredItems = sortItems(filteredItems, input.sort, configuration.sortings)
   } else {
     if (ids) {
@@ -86,7 +87,7 @@ export function search<
         page * perPage,
       )
       filteredItems = filteredItemsIndices.map((_id) => {
-        return facets.get_item(_id)
+        return facets.getItem(_id)
       })
 
       paginationApplied = true
@@ -106,7 +107,7 @@ export function search<
         configuration.aggregations,
       ),
       allFilteredItems,
-      items: filteredItems,
+      items: filteredItems.map(({_id, ...item}) => item) as I[],
     },
     pagination: {
       page,
@@ -114,23 +115,4 @@ export function search<
       total: filteredIndices.length,
     },
   }
-}
-
-/**
- * return items by sort
- */
-export function sortItems<I extends Record<string, unknown>, S extends string>(
-  items: I[],
-  sort: S | Sorting<I>,
-  sortings?: Record<S, Sorting<I>>,
-): I[] {
-  if (typeof sort === "string" && sortings && sortings[sort]) {
-    sort = sortings[sort]
-  }
-
-  if (typeof sort !== "string" && sort.field) {
-    return orderBy(items, sort.field, sort.order || "asc")
-  }
-
-  return items
 }

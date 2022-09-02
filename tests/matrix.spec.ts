@@ -18,9 +18,9 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
   const fields = ["a", "b", "c"]
 
   it("checks matrix with no argument provided", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = matrix(data)
+    const result = matrix(facets)
     expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1, 2, 4, 6, 7])
     expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
     expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([1, 4, 6, 9])
@@ -31,13 +31,13 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
   })
 
   it("checks matrix with some values", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = combinationIndices(data, [[["a", 2]]])
+    const result = combinationIndices(facets, [[["a", 2]]])
     expect([3, 5, 8, 9]).deep.eq(result.a.toArray())
     expect(undefined).eq(result.b)
 
-    const result2 = matrix(data, [["a", 2]])
+    const result2 = matrix(facets, [["a", 2]])
     expect(result2.bitsDataTemp.a["1"].toArray()).deep.eq([])
     expect(result2.bitsDataTemp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
     expect(result2.bitsDataTemp.b["2"].toArray()).deep.eq([9])
@@ -46,9 +46,9 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
   })
 
   it("checks matrix with one not existing value", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = matrix(data, [
+    const result = matrix(facets, [
       ["a", 2],
       ["c", 2],
     ])
@@ -60,9 +60,9 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
   })
 
   it("checks matrix with disjunctive values", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = combinationIndices(data, [
+    const result = combinationIndices(facets, [
       [
         ["a", 1],
         ["a", 2],
@@ -71,7 +71,7 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
     expect([1, 2, 3, 4, 5, 6, 7, 8, 9]).deep.eq(result.a.toArray())
     expect(undefined).eq(result.b)
 
-    const result2 = matrix(data, [
+    const result2 = matrix(facets, [
       [
         ["a", 1],
         ["a", 2],
@@ -87,9 +87,9 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
   })
 
   it("checks matrix with disjunctive values (ittocean case)", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = combinationIndices(data, [
+    const result = combinationIndices(facets, [
       [["a", 1]],
       [["b", 2]],
       [["c", 3]],
@@ -98,7 +98,7 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
     expect([1, 4, 6, 9]).deep.eq(result.b.toArray())
     expect([1, 2, 3, 4, 5, 6, 7, 8, 9]).deep.eq(result.c.toArray())
 
-    const result2 = matrix(data, [[["a", 1]], [["b", 2]], [["c", 3]]])
+    const result2 = matrix(facets, [[["a", 1]], [["b", 2]], [["c", 3]]])
     expect(result2.bitsDataTemp.a["1"].toArray()).deep.eq([1, 4, 6])
     expect(result2.bitsDataTemp.a["2"].toArray()).deep.eq([9])
     expect(result2.bitsDataTemp.b["2"].toArray()).deep.eq([1, 4, 6])
@@ -117,9 +117,9 @@ describe("filtering and generating facets for another dataset (3 rows in dataset
   const fields = ["a", "b", "c"]
 
   it("checks matrix with disjunctive values", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = matrix(data, [
+    const result = matrix(facets, [
       [
         ["a", 1],
         ["a", 2],
@@ -135,9 +135,9 @@ describe("filtering and generating facets for another dataset (3 rows in dataset
   })
 
   it("checks matrix with one disjunctive value", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = matrix(data, [[["a", 1]]])
+    const result = matrix(facets, [[["a", 1]]])
     expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1])
     expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([2])
     expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([3])
@@ -148,8 +148,8 @@ describe("filtering and generating facets for another dataset (3 rows in dataset
   })
 
   it("checks matrix with many disjunctive values", () => {
-    const data = indexFields(items, fields)
-    const result = matrix(data, [[["a", 1]], [["b", 1]], [["c", 3]]])
+    const {facets} = indexFields(items, fields)
+    const result = matrix(facets, [[["a", 1]], [["b", 1]], [["c", 3]]])
     expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1])
     expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([])
     expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([])
@@ -160,8 +160,8 @@ describe("filtering and generating facets for another dataset (3 rows in dataset
   })
 
   it("checks matrix with negative filter values", () => {
-    const data = indexFields(items, fields)
-    const result = matrix(data, [["a", "-", 1]])
+    const {facets} = indexFields(items, fields)
+    const result = matrix(facets, [["a", "-", 1]])
     expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([])
     expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([2])
     expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([3])
@@ -172,8 +172,8 @@ describe("filtering and generating facets for another dataset (3 rows in dataset
   })
 
   it("checks matrix with negative filter values (2)", () => {
-    const data = indexFields(items, fields)
-    const result = matrix(data, [
+    const {facets} = indexFields(items, fields)
+    const result = matrix(facets, [
       ["a", "-", 1],
       ["b", "-", 2],
     ])
@@ -198,9 +198,9 @@ describe("filtering and generating facets (4 rows in dataset)", function () {
   const fields = ["a", "b"]
 
   it("checks matrix with disjunctive values", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = matrix(data)
+    const result = matrix(facets)
     expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1, 2])
     expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([3, 4])
     expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([1, 3])
@@ -208,9 +208,9 @@ describe("filtering and generating facets (4 rows in dataset)", function () {
   })
 
   it("checks matrix with disjunctive values", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = matrix(data, [[["a", 1]]])
+    const result = matrix(facets, [[["a", 1]]])
     expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1, 2])
     expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([3, 4])
     expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([1])
@@ -218,13 +218,13 @@ describe("filtering and generating facets (4 rows in dataset)", function () {
   })
 
   it("checks matrix with disjunctive values", () => {
-    const data = indexFields(items, fields)
+    const {facets} = indexFields(items, fields)
 
-    const result = combinationIndices(data, [[["b", 3]], [["a", 1]]])
+    const result = combinationIndices(facets, [[["b", 3]], [["a", 1]]])
     expect([1, 2]).deep.eq(result.a.toArray())
     expect([1, 3]).deep.eq(result.b.toArray())
 
-    const result2 = matrix(data, [[["b", 3]], [["a", 1]]])
+    const result2 = matrix(facets, [[["b", 3]], [["a", 1]]])
     expect([1]).deep.eq(result2.bitsDataTemp.a["1"].toArray())
     expect([3]).deep.eq(result2.bitsDataTemp.a["2"].toArray())
     expect([1]).deep.eq(result2.bitsDataTemp.b["3"].toArray())
