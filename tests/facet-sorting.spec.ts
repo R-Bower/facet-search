@@ -204,7 +204,7 @@ describe("facet sorting", function () {
     const aggregation = new FacetSearch(items, {
       aggregations: {
         genres: {
-          chosen_filters_on_top: false,
+          chosenFiltersOnTop: false,
           sort: "key",
         },
       },
@@ -228,7 +228,7 @@ describe("facet sorting", function () {
     const aggregation = new FacetSearch(items, {
       aggregations: {
         genres: {
-          hide_zero_doc_count: true,
+          hideZeroDocCount: true,
         },
       },
     }).aggregation({

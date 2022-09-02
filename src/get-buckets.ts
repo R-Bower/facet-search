@@ -1,46 +1,46 @@
-import {chain, isArray, mapValues, orderBy} from "lodash-es"
+import {chain, mapValues, orderBy} from "lodash-es"
 
-import {Buckets} from "./types"
+import {Aggregation, Buckets, FacetData, Item, Order} from "./types"
 
-export function getBuckets<I extends Record<string, unknown>>(
-  data: I[],
-  input,
-  aggregations,
+export function getBuckets<I extends Item>(
+  data: FacetData,
+  input: Partial<Record<string | number, Array<string | number>>>,
+  aggregations: Record<string, Aggregation> = {} as any,
 ): Record<string, {buckets: Buckets<I>; name: string; position: number}> {
   let position = 1
 
-  return mapValues(data["bits_data_temp"], (v, k) => {
+  return mapValues(data.bits_data_temp, (v, k: string) => {
     let order
     let sort
     let size
-    let chosen_filters_on_top
-    let hide_zero_doc_count
+    let chosenFiltersOnTop = false
+    let hideZeroDocCount = false
 
     if (aggregations[k]) {
       order = aggregations[k].order
       sort = aggregations[k].sort
       size = aggregations[k].size
-      chosen_filters_on_top = aggregations[k].chosen_filters_on_top !== false
-      hide_zero_doc_count = aggregations[k].hide_zero_doc_count || false
+      chosenFiltersOnTop = aggregations[k].chosenFiltersOnTop !== false
+      hideZeroDocCount = aggregations[k].hideZeroDocCount || false
     }
 
-    let buckets = chain(v)
+    const buckets: Buckets<I> = chain(v)
       .toPairs()
       .map((v2) => {
         let filters = []
 
-        if (input && input.filters && input.filters[k]) {
+        if (input && input.filters && k in input.filters) {
           filters = input.filters[k]
         }
 
         const doc_count = v2[1].toArray().length
 
-        if (hide_zero_doc_count && doc_count === 0) {
+        if (hideZeroDocCount && doc_count === 0) {
           return
         }
 
         return {
-          doc_count: doc_count,
+          doc_count,
           key: v2[0],
           selected: filters.indexOf(v2[0]) !== -1,
         }
@@ -49,34 +49,31 @@ export function getBuckets<I extends Record<string, unknown>>(
       .value()
 
     let iteratees
-    let sort_order
+    let sortOrder: Order[]
 
-    if (isArray(sort)) {
+    if (Array.isArray(sort)) {
       iteratees = sort || ["key"]
-      sort_order = order || ["asc"]
+      sortOrder = order || ["asc"]
     } else {
       if (sort === "term" || sort === "key") {
         iteratees = ["key"]
-        sort_order = [order || "asc"]
+        sortOrder = [order || "asc"]
       } else {
         iteratees = ["doc_count", "key"]
-        sort_order = [order || "desc", "asc"]
+        sortOrder = [order || "desc", "asc"]
       }
 
-      if (chosen_filters_on_top) {
+      if (chosenFiltersOnTop) {
         iteratees.unshift("selected")
-        sort_order.unshift("desc")
+        sortOrder.unshift("desc")
       }
     }
 
-    buckets = orderBy(buckets, iteratees, sort_order)
-
-    buckets = buckets.slice(0, size || 10)
-
-    // Calculate the facet_stats
-
     return {
-      buckets: buckets,
+      buckets: orderBy<Buckets<I>>(buckets, iteratees, sortOrder).slice(
+        0,
+        size || 10,
+      ) as Buckets<I>,
       name: k,
       position: position++,
     }

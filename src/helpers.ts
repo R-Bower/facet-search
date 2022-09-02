@@ -1,22 +1,31 @@
 import BitSet from "bitset"
-import {chain, clone, map, mapValues, sortBy} from "lodash-es"
+import {chain, clone, get, map, mapValues, sortBy} from "lodash-es"
 
-export const combinationIndices = function (facets, filters) {
-  const indices = {}
+import {
+  Aggregation,
+  BitDataMap,
+  BitSetDataMap,
+  FacetData,
+  Item,
+  SearchOptions,
+} from "./types"
 
-  mapValues(filters, function (filter) {
+export const combinationIndices = function (facets: FacetData, filters) {
+  const indices: Record<string, BitSet> = {}
+
+  mapValues(filters, (filter) => {
     // filter is still array so disjunctive
     if (Array.isArray(filter[0])) {
-      let facet_union = new BitSet([])
+      let facetUnion = new BitSet([])
       const filterKeys = []
 
-      mapValues(filter, function (disjunctiveFilter) {
+      mapValues(filter, (disjunctiveFilter) => {
         const filterKey = disjunctiveFilter[0]
         const filterVal = disjunctiveFilter[1]
 
         filterKeys.push(filterKey)
-        facet_union = facet_union.or(facets["bits_data"][filterKey][filterVal])
-        indices[filterKey] = facet_union
+        facetUnion = facetUnion.or(facets.bits_data[filterKey][filterVal])
+        indices[filterKey] = facetUnion
       })
     }
   })
@@ -27,10 +36,11 @@ export const combinationIndices = function (facets, filters) {
 /*
  * returns facets and ids
  */
-export const matrix = function (facets, filters) {
+export const matrix = (
+  facets: FacetData & {is_temp_copied?: boolean},
+  filters: any[] = [],
+) => {
   const tempFacet = clone(facets)
-
-  filters = filters || []
 
   mapValues(tempFacet.bits_data, (values, key) => {
     mapValues(tempFacet.bits_data[key], (facetIndices, key2) => {
@@ -40,7 +50,7 @@ export const matrix = function (facets, filters) {
 
   tempFacet.is_temp_copied = true
 
-  let conjunctiveIndex
+  let conjunctiveIndex: any
   const disjunctiveIndices = combinationIndices(facets, filters)
 
   /**
@@ -110,13 +120,20 @@ export const matrix = function (facets, filters) {
   return tempFacet
 }
 
-export function index(items, fields) {
+export function indexFields<I extends Item>(
+  items: I[],
+  fields: string[],
+): {
+  bits_data: BitSetDataMap
+  bits_data_temp: BitSetDataMap
+  data: BitDataMap
+} {
   fields = fields || []
 
   const facets = {
-    bits_data: {},
-    bits_data_temp: {},
-    data: {},
+    bits_data: {} as BitSetDataMap,
+    bits_data_temp: {} as BitSetDataMap,
+    data: {} as BitDataMap,
   }
 
   let i = 1
@@ -133,37 +150,44 @@ export function index(items, fields) {
   // replace chain with forEach
 
   chain(items)
-    .map((item) => {
-      fields.forEach((field) => {
-        //if (!item || !item[field]) {
-        if (!item) {
+    .map((item: Item) => {
+      fields.forEach((field: string) => {
+        if (!item || !item._id) {
           return
         }
 
-        if (!facets["data"][field]) {
-          facets["data"][field] = {}
+        if (!facets.data[field]) {
+          facets.data[field] = {}
         }
 
-        if (Array.isArray(item[field])) {
-          item[field].forEach((v) => {
-            if (!item[field]) {
+        // TODO: check to see how match-sorter does this
+        const fieldValue: any = get(item, field)
+
+        if (Array.isArray(fieldValue)) {
+          fieldValue.forEach((v) => {
+            if (Array.isArray(v)) {
+              console.debug("Tuples aren't supported yet")
               return
             }
 
-            if (!facets["data"][field][v]) {
-              facets["data"][field][v] = []
+            if (typeof v === "object") {
+              console.debug("Nested properties aren't supported yet")
+              return
             }
 
-            facets["data"][field][v].push(parseInt(item._id))
-          })
-        } else if (typeof item[field] !== "undefined") {
-          const v = item[field]
+            if (!facets.data[field][v]) {
+              facets.data[field][v] = []
+            }
 
-          if (!facets["data"][field][v]) {
-            facets["data"][field][v] = []
+            // @ts-expect-error item._id is not detected properly
+            facets.data[field][v].push(item._id)
+          })
+        } else {
+          if (!facets.data[field][fieldValue]) {
+            facets.data[field][fieldValue] = []
           }
 
-          facets["data"][field][v].push(parseInt(item._id))
+          facets.data[field][fieldValue].push(item._id)
         }
       })
 
@@ -171,16 +195,15 @@ export function index(items, fields) {
     })
     .value()
 
-  facets["data"] = mapValues(facets["data"], function (values, field) {
-    if (!facets["bits_data"][field]) {
-      facets["bits_data"][field] = {}
-      facets["bits_data_temp"][field] = {}
+  facets.data = mapValues(facets.data, function (values, field) {
+    if (!facets.bits_data[field]) {
+      facets.bits_data[field] = {}
+      facets.bits_data_temp[field] = {}
     }
 
-    //console.log(values);
     return mapValues(values, function (indexes, filter) {
       const sortedIndices = sortBy(indexes)
-      facets["bits_data"][field][filter] = new BitSet(sortedIndices)
+      facets.bits_data[field][filter] = new BitSet(sortedIndices)
       return sortedIndices
     })
   })
@@ -189,44 +212,36 @@ export function index(items, fields) {
 }
 
 /**
- * calculates ids for filters
- */
-export const filterIds = function (facetData) {
-  let output = new BitSet([])
-
-  mapValues(facetData, function (values, key) {
-    mapValues(facetData[key], function (facet_indexes, key2) {
-      output = output.or(facetData[key][key2])
-    })
-  })
-
-  return output
-}
-
-/**
  * calculates ids for facets
  * if there is no facet input then return null to not save resources for OR calculation
  * null means facets haven't matched searched items
  */
-export const facets_ids = function (facets_data, filters) {
+export function facetIds<A extends string>(
+  facetData: BitSetDataMap,
+  filters: Partial<Record<A, Array<string | number>>>,
+): BitSet | undefined {
   let output = new BitSet([])
   let i = 0
 
   mapValues(filters, function (filters, field) {
     filters.forEach((filter) => {
       ++i
-      output = output.or(facets_data[field][filter])
+      output = output.or(facetData[field][filter])
     })
   })
 
   if (i === 0) {
-    return null
+    return
   }
 
   return output
 }
 
-export function mergeAggregations(aggregations, input) {
+export function mergeAggregations<
+  I extends Item,
+  S extends string,
+  A extends string,
+>(aggregations: Record<A, Aggregation>, input: SearchOptions<I, S, A>) {
   return mapValues(clone(aggregations), (val, key) => {
     if (!val.field) {
       val.field = key
@@ -239,23 +254,12 @@ export function mergeAggregations(aggregations, input) {
 
     val.filters = filters
 
-    let not_filters = []
-    if (input.not_filters && input.not_filters[key]) {
-      not_filters = input.not_filters[key]
-    }
-
-    if (input.exclude_filters && input.exclude_filters[key]) {
-      not_filters = input.exclude_filters[key]
-    }
-
-    val.not_filters = not_filters
-
     return val
   })
 }
 
-export const inputToFacetFilters = function (input, config) {
-  const filters = []
+export function inputToFacetFilters(input, config) {
+  const filters: [string, any][] = []
 
   mapValues(input.filters, function (values, key) {
     if (values && values.length) {
@@ -264,21 +268,13 @@ export const inputToFacetFilters = function (input, config) {
           filters.push([key, values2])
         })
       } else {
-        const temp = []
+        const temp: [string, any][] = []
         mapValues(values, (values2) => {
           temp.push([key, values2])
         })
 
         filters.push(temp)
       }
-    }
-  })
-
-  mapValues(input.not_filters, function (values, key) {
-    if (values && values.length) {
-      mapValues(values, (values2) => {
-        filters.push([key, "-", values2])
-      })
     }
   })
 

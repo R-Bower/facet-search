@@ -11,7 +11,6 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
     "outDir": "dist",
     "resolveJsonModule": true,
     "removeComments": true,

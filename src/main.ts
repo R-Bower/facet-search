@@ -2,8 +2,8 @@ import {aggregation} from "./aggregation"
 import {Facets} from "./facets"
 import {mergeAggregations} from "./helpers"
 import {search} from "./search"
-import {similar} from "./similar"
 import {
+  Aggregation,
   AggregationOptions,
   Buckets,
   Configuration,
@@ -39,14 +39,13 @@ export class FacetSearch<
       this.items,
       {
         ...input,
-        aggregations: mergeAggregations(this.configuration.aggregations, input),
+        aggregations: mergeAggregations(
+          this.configuration.aggregations ?? ({} as Record<A, Aggregation>),
+          input,
+        ),
       },
       this.configuration,
       this.facets,
     )
-  }
-
-  similar(id, options) {
-    return similar(this.items, id, options)
   }
 }

@@ -68,20 +68,20 @@ describe("itemjs general tests", function () {
       per_page: 1,
     })
     expect(result.data.items.length).eq(1)
-    expect(result.data.allFilteredItems.length).eq(3)
+    expect(result.data?.allFilteredItems?.length).eq(3)
 
     result = facetSearch.search({
       is_all_filtered_items: false,
       per_page: 1,
     })
     expect(result.data.items.length).eq(1)
-    expect(result.data.allFilteredItems).eq(null)
+    expect(result.data.allFilteredItems).eq(undefined)
 
     result = facetSearch.search({
       per_page: 1,
     })
     expect(result.data.items.length).eq(1)
-    expect(result.data.allFilteredItems).eq(null)
+    expect(result.data.allFilteredItems).eq(undefined)
   })
 
   it("makes search with pagination and filter", () => {
@@ -136,8 +136,6 @@ describe("itemjs general tests", function () {
       aggregations: {
         tags: {
           size: 10,
-          title: "Tags",
-          type: "terms",
         },
       },
     })
@@ -168,8 +166,6 @@ describe("itemjs general tests", function () {
       aggregations: {
         tags: {
           size: 10,
-          title: "Tags",
-          type: "terms",
         },
       },
     })
@@ -180,7 +176,7 @@ describe("itemjs general tests", function () {
     expect(result.data.aggregations.tags.buckets[0].doc_count).eq(3)
   })
 
-  it("makes aggregations for undefined field", function test(done) {
+  it("makes aggregations for undefined field", () => {
     const items = [
       {
         name: "movie1",
@@ -197,13 +193,10 @@ describe("itemjs general tests", function () {
       aggregations: {
         tags: {
           size: 10,
-          title: "Tags",
-          type: "terms",
         },
       },
     })
     const result = searcher.search({})
     expect(result.data.items.length).eq(3)
-    done()
   })
 })

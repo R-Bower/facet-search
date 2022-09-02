@@ -1,37 +1,34 @@
-import BitSet from "typedfastbitset"
+import BitSet from "bitset"
 import {clone, mapValues} from "lodash-es"
 
+import {facetIds, indexFields, inputToFacetFilters, matrix} from "./helpers"
 import {
-  facets_ids,
-  filterIds,
-  index,
-  inputToFacetFilters,
-  matrix,
-} from "./helpers"
-import {Aggregation, Configuration} from "./types"
+  Aggregation,
+  Configuration,
+  FacetData,
+  Item,
+  SearchOptions,
+} from "./types"
 
 /**
  * responsible for making faceted search
  */
-export class Facets<
-  I extends Record<string, unknown>,
-  S extends string,
-  A extends string,
-> {
+export class Facets<I extends Item, S extends string, A extends string> {
   config: Record<A, Aggregation>
-  facets: any
-  _items_map: any
-  _ids: any
-  ids_map: any
+  facets: FacetData
+  items: I[]
+  _items_map: Record<number, I>
+  _ids: number[]
+  ids_map: Record<string, number>
   _bits_ids: BitSet
 
-  constructor(items, configuration: Configuration<I, S, A> = {}) {
+  constructor(items: I[], configuration: Configuration<I, S, A> = {}) {
     configuration = configuration || {}
     configuration.aggregations =
       configuration.aggregations || ({} as Record<A, Aggregation>)
     this.items = items
     this.config = configuration.aggregations
-    this.facets = index(items, Object.keys(this.config))
+    this.facets = indexFields(items, Object.keys(this.config))
 
     this._items_map = {}
     this._ids = []
@@ -47,7 +44,7 @@ export class Facets<
     this.ids_map = {}
 
     if (items) {
-      items.forEach((v) => {
+      items.forEach((v: Item & {id?: string}) => {
         if (v.id && v._id) {
           this.ids_map[v.id] = v._id
         }
@@ -57,78 +54,52 @@ export class Facets<
     this._bits_ids = new BitSet(this._ids)
   }
 
-  bits_ids(ids) {
+  bits_ids(ids?: number[]) {
     if (ids) {
       return new BitSet(ids)
     }
     return this._bits_ids
   }
 
-  get_item(_id) {
+  get_item(_id: number) {
     return this._items_map[_id]
   }
 
-  index() {
-    return this.facets
-  }
-
-  internal_ids_from_ids_map(ids) {
+  internal_ids_from_ids_map(ids: number[]) {
     return ids.map((v) => {
       return this.ids_map[v]
     })
-  }
-
-  items() {
-    return this.items
   }
 
   /*
    *
    * ids is optional only when there is query
    */
-  search(input, data) {
+  search(input: SearchOptions<I, S, A>, data: {queryIds?: BitSet} = {}) {
     const config = this.config
-    data = data || {}
 
     // consider removing clone
-    const temp_facet = clone(this.facets)
-
-    temp_facet.not_ids = facets_ids(temp_facet["bits_data"], input.not_filters)
+    const tempFacet = clone(this.facets)
 
     const filters = inputToFacetFilters(input, config)
     const temp_data = matrix(this.facets, filters)
 
-    temp_facet["bits_data_temp"] = temp_data["bits_data_temp"]
+    tempFacet.bits_data_temp = temp_data.bits_data_temp
 
-    mapValues(temp_facet["bits_data_temp"], function (values, key) {
-      mapValues(
-        temp_facet["bits_data_temp"][key],
-        function (facet_indexes, key2) {
-          if (data.query_ids) {
-            temp_facet["bits_data_temp"][key][key2] = data.query_ids.and(
-              temp_facet["bits_data_temp"][key][key2],
-            )
-          }
-
-          if (data.test) {
-            temp_facet["data"][key][key2] =
-              temp_facet["bits_data_temp"][key][key2].toArray()
-          }
-        },
-      )
-    })
-
-    /**
-     * calculating ids (for a list of items)
-     * facets ids is faster and filter ids because filter ids makes union each to each filters
-     * filter ids needs to be used if there is filters query
-     */
-    if (input.filters_query) {
-      temp_facet.ids = filterIds(temp_facet["bits_data_temp"])
-    } else {
-      temp_facet.ids = facets_ids(temp_facet["bits_data_temp"], input.filters)
+    if (data.queryIds) {
+      mapValues(tempFacet.bits_data_temp, (values, key) => {
+        mapValues(tempFacet.bits_data_temp[key], (facet_indexes, key2) => {
+          // @ts-expect-error TS not properly detecting that queryIds is defined
+          tempFacet.bits_data_temp[key][key2] = data.queryIds.and(
+            tempFacet.bits_data_temp[key][key2],
+          )
+        })
+      })
     }
 
-    return temp_facet
+    // calculating ids (for a list of items)
+    tempFacet.ids = facetIds(tempFacet.bits_data_temp, input.filters ?? {})
+
+    return tempFacet
   }
 }

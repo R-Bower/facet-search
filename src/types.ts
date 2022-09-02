@@ -1,3 +1,10 @@
+import BitSet from "bitset"
+
+export interface Item extends Record<string, unknown> {
+  _id?: number
+  id?: string
+}
+
 export interface Pagination {
   page: number
   per_page: number
@@ -23,13 +30,16 @@ export interface AggregationOptions<A extends string> {
 }
 
 export interface SearchOptions<
-  I extends Record<string, unknown>,
+  I extends Item,
   S extends string,
   A extends string,
 > {
   /** A custom function to filter values */
+  _ids?: number[]
+  aggregations?: Record<A, Aggregation>
   filter?: (item: I) => boolean
-  filters?: Partial<Record<A, string[]>>
+  filters?: Partial<Record<A, Array<string | number>>>
+  ids?: number[]
   /** @default false */
   isExactSearch?: boolean
   /** @default false */
@@ -44,40 +54,57 @@ export interface SearchOptions<
   sort?: S | Sorting<I>
 }
 
-export interface Bucket<I extends Record<string, unknown>> {
+export interface Bucket<I extends Item> {
   doc_count: number
   key: keyof I & string
   selected: boolean
 }
 
-export type Buckets<I extends Record<string, unknown>> = Array<Bucket<I>>
+export type Buckets<I extends Item> = Array<Bucket<I>>
 
-export interface Aggregation {
+export type Sort = "term" | "count" | "selected" | "key" | "doc_count"
+
+export type Aggregation = {
+  chosenFiltersOnTop?: boolean
   conjunction?: boolean
+  field?: string
+  hideZeroDocCount?: boolean
   /** @default 'asc' */
   order?: Order[] | Order
   /** @default 10 */
   size?: number
   /** @default 'count' */
-  sort?:
-    | "term"
-    | "count"
-    | "selected"
-    | "key"
-    | "doc_count"
-    | Array<"term" | "count" | "selected" | "key" | "doc_count">
+  sort?: Sort | Sort[]
 }
 
 /** Configuration for FacetSearch */
 export interface Configuration<
-  I extends Record<string, unknown>,
+  I extends Item,
   S extends string,
   A extends string,
 > {
   aggregations?: Record<A, Aggregation>
-  /** @default true */
-  native_search_enabled?: boolean
   /** @default [] */
-  searchableFields?: Array<keyof I>
   sortings?: Record<S, Sorting<I>>
+}
+
+export interface SimilarOptions<I extends Item> {
+  field: keyof I & string
+  /** @default 0 */
+  minimum?: number | undefined
+  /** @default 1 */
+  page?: number | undefined
+  /** @default 10 */
+  per_page?: number | undefined
+}
+
+export type BitDataMap = Record<string, Record<string, number[]>>
+
+export type BitSetDataMap = Record<string, Record<string, BitSet>>
+
+export type FacetData = {
+  bits_data: BitSetDataMap
+  bits_data_temp: BitSetDataMap
+  data: BitDataMap
+  ids?: BitSet
 }

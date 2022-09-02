@@ -1,16 +1,22 @@
 import {clone} from "lodash-es"
 
+import {Facets} from "./facets"
 import {search} from "./search"
+import {Aggregation, AggregationOptions, Configuration} from "./types"
 
 /**
  * returns list of elements in specific facet
  * useful for autocomplete or list all aggregation options
  */
-export function aggregation<T extends Record<string, unknown>>(
-  items,
-  options,
-  configuration,
-  facets,
+export function aggregation<
+  I extends Record<string, unknown>,
+  S extends string,
+  A extends string,
+>(
+  items: I[],
+  options: AggregationOptions<A>,
+  configuration: Configuration<I, S, A>,
+  facets: Facets<I, S, A>,
 ) {
   const perPage = options.per_page || 10
   const page = options.page || 1
@@ -31,6 +37,10 @@ export function aggregation<T extends Record<string, unknown>>(
 
   if (!options.name) {
     throw new Error("field name is required")
+  }
+
+  if (!configuration.aggregations) {
+    configuration.aggregations = {} as Record<A, Aggregation>
   }
 
   configuration.aggregations[options.name].size = 10000

@@ -26,10 +26,13 @@ describe("aggregation / facet", function () {
   it("makes error if name does not exist", () => {
     try {
       facetSearch.aggregation({
+        // @ts-expect-error
         name: "category2",
       })
-    } catch (err) {
-      expect(err.message).eq('Please define aggregation "category2" in config')
+    } catch (err: unknown) {
+      expect((err as {message: string}).message).eq(
+        'Please define aggregation "category2" in config',
+      )
     }
   })
 
