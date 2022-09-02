@@ -3,7 +3,6 @@ import {clone} from "lodash-es"
 import {Facets} from "./facets"
 import {search} from "./search"
 import {
-  Aggregation,
   AggregationOptions,
   AggregationResult,
   Configuration,
@@ -14,10 +13,10 @@ import {
  * returns list of elements in specific facet
  * useful for autocomplete or list all aggregation options
  */
-export function aggregation<I extends Item, S extends string, A extends string>(
-  options: AggregationOptions<A>,
-  configuration: Configuration<I, S, A>,
-  facets: Facets<I, S, A>,
+export function aggregation<I extends Item, S extends string>(
+  options: AggregationOptions,
+  configuration: Configuration<I, S>,
+  facets: Facets<I, S>,
 ): AggregationResult<I> {
   const perPage = options.perPage || 10
   const page = options.page || 1
@@ -39,7 +38,7 @@ export function aggregation<I extends Item, S extends string, A extends string>(
   }
 
   if (!configuration.aggregations) {
-    configuration.aggregations = {} as Record<A, Aggregation>
+    configuration.aggregations = {}
   }
 
   configuration.aggregations[options.name].size = 10000

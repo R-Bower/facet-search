@@ -24,10 +24,10 @@ export interface Sorting<I extends Record<string, unknown>> {
   order?: Order | Order[]
 }
 
-export interface AggregationOptions<A extends string> {
+export interface AggregationOptions {
   conjunction?: boolean
   filters?: Record<string, FilterValue>
-  name: A
+  name: string
   /** @default 1 */
   page?: number
   /** @default 10 */
@@ -40,13 +40,8 @@ export type FullTextSearchInput = {
   searchableFields: string[]
 }
 
-export interface SearchInput<
-  I extends Item,
-  S extends string,
-  A extends string,
-> {
-  /** A custom function to filter values */
-  aggregations?: Record<A, Aggregation>
+export interface SearchInput<I extends Item, S extends string> {
+  aggregations?: Record<string, Aggregation>
   filters?: Record<string, FilterValue>
   ids?: number[]
   /** @default false */
@@ -73,6 +68,7 @@ export type Sort = "term" | "count" | "selected" | "key" | "docCount"
 export type Aggregation = {
   chosenFiltersOnTop?: boolean
   conjunction?: boolean
+  // Optional field for targeting deeply-nested values.
   field?: string
   filters?: FilterValue
   hideZeroDocCount?: boolean
@@ -85,12 +81,8 @@ export type Aggregation = {
 }
 
 /** Configuration for FacetSearch */
-export interface Configuration<
-  I extends Item,
-  S extends string,
-  A extends string,
-> {
-  aggregations?: Record<A, Aggregation>
+export interface Configuration<I extends Item, S extends string> {
+  aggregations?: Record<string, Aggregation>
   searchableFields?: string[]
   /** @default [] */
   sortings?: Record<S, Sorting<I>>

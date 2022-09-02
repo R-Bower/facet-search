@@ -7,18 +7,18 @@ import {Aggregation, Configuration, FacetData, Item, SearchInput} from "./types"
 /**
  * responsible for making faceted search
  */
-export class Facets<I extends Item, S extends string, A extends string> {
-  private readonly config: Record<A, Aggregation>
+export class Facets<I extends Item, S extends string> {
+  private readonly config: Record<string, Aggregation>
   private readonly facets: FacetData
   private readonly itemsMap: Record<number, I & {_id: number}>
   private readonly items: Array<I & {_id: number}>
   private readonly idsMap: Record<string, number>
   private readonly bitsIds: BitSet
 
-  constructor(items: I[], configuration: Configuration<I, S, A> = {}) {
+  constructor(items: I[], configuration: Configuration<I, S> = {}) {
     configuration = configuration || {}
     configuration.aggregations =
-      configuration.aggregations || ({} as Record<A, Aggregation>)
+      configuration.aggregations || ({} as Record<string, Aggregation>)
     this.config = configuration.aggregations
     const {facets, ids, indexedItems, itemsMap} = indexFields(
       items,
@@ -56,7 +56,7 @@ export class Facets<I extends Item, S extends string, A extends string> {
    *
    * ids is optional only when there is query
    */
-  search(input: SearchInput<I, S, A>, data: {queryIds?: BitSet} = {}) {
+  search(input: SearchInput<I, S>, data: {queryIds?: BitSet} = {}) {
     const config = this.config
 
     // consider removing clone
@@ -70,7 +70,7 @@ export class Facets<I extends Item, S extends string, A extends string> {
     if (data.queryIds) {
       mapValues(tempFacet.bitsDataTemp, (values, key) => {
         mapValues(tempFacet.bitsDataTemp[key], (facet_indexes, key2) => {
-          // @ts-expect-error TS not properly detecting that queryIds is defined
+          // @ts-ignore TS not properly detecting that queryIds is defined
           tempFacet.bitsDataTemp[key][key2] = data.queryIds.and(
             tempFacet.bitsDataTemp[key][key2],
           )

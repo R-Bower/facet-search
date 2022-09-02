@@ -26,7 +26,6 @@ describe("aggregation / facet", function () {
   it("makes error if name does not exist", () => {
     try {
       facetSearch.aggregation({
-        // @ts-expect-error category2 doesn't exist in the data, which TS detects properly
         name: "category2",
       })
     } catch (err: unknown) {

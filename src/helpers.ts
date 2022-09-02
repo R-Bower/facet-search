@@ -79,8 +79,7 @@ export function matrix(
   })
 
   // cross all facets with conjunctive index
-  // @ts-expect-error the compiler doesn't evaluate the inner functions of
-  // mapValues in the block above?
+  // @ts-ignore the compiler doesn't evaluate the inner functions of mapValues in the block above?
   if (conjunctiveIndex) {
     mapValues(tempFacet.bitsDataTemp, (values, key) => {
       mapValues(tempFacet.bitsDataTemp[key], (facetIndices, key2) => {
@@ -250,11 +249,10 @@ export function mergeAggregations<A extends string>(
   })
 }
 
-export function inputToFacetFilters<
-  I extends Item,
-  S extends string,
-  A extends string,
->(input: SearchInput<I, S, A>, config: Record<string, Aggregation>) {
+export function inputToFacetFilters<I extends Item, S extends string>(
+  input: SearchInput<I, S>,
+  config: Record<string, Aggregation>,
+) {
   const filters: any[] = []
 
   mapValues(input.filters, function (values, key) {

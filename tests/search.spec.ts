@@ -5,7 +5,7 @@ import {Configuration} from "../src/types"
 import items from "./fixtures/items.json"
 
 describe("search", () => {
-  const configuration: Configuration<typeof items[0], string, string> = {
+  const configuration: Configuration<typeof items[0], string> = {
     aggregations: {
       actors: {
         conjunction: true,

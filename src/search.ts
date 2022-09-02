@@ -22,10 +22,10 @@ export interface SearchResult<I extends Item> {
   }
 }
 
-export function search<I extends Item, S extends string, A extends string>(
-  input: SearchInput<I, S, A> = {},
-  configuration: Configuration<I, S, A>,
-  facets: Facets<I, S, A>,
+export function search<I extends Item, S extends string>(
+  input: SearchInput<I, S> = {},
+  configuration: Configuration<I, S>,
+  facets: Facets<I, S>,
 ): SearchResult<I> {
   const perPage = input.perPage || 12
   const page = input.page || 1
@@ -63,11 +63,10 @@ export function search<I extends Item, S extends string, A extends string>(
   // -------------------------------------
   let filteredIndices = filteredIndexesBitmap.toArray()
 
-  let filteredItems: Array<I & {_id: number}> | undefined = filteredIndices.map(
-    (_id: number) => {
+  let filteredItems: Array<I & {_id?: number}> | undefined =
+    filteredIndices.map((_id: number) => {
       return facets.getItem(_id)
-    },
-  )
+    })
 
   /**
    * sorting items
