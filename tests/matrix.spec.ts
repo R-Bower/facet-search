@@ -21,11 +21,11 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
     const data = indexFields(items, fields)
 
     const result = matrix(data)
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([1, 2, 4, 6, 7])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([1, 4, 6, 9])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([2, 3, 5, 7, 8])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1, 2, 4, 6, 7])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
+    expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([1, 4, 6, 9])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([2, 3, 5, 7, 8])
+    expect(result.bitsDataTemp.c["3"].toArray()).deep.eq([
       1, 2, 3, 4, 5, 6, 7, 8, 9,
     ])
   })
@@ -38,11 +38,11 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
     expect(undefined).eq(result.b)
 
     const result2 = matrix(data, [["a", 2]])
-    expect(result2.bits_data_temp.a["1"].toArray()).deep.eq([])
-    expect(result2.bits_data_temp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
-    expect(result2.bits_data_temp.b["2"].toArray()).deep.eq([9])
-    expect(result2.bits_data_temp.b["3"].toArray()).deep.eq([3, 5, 8])
-    expect(result2.bits_data_temp.c["3"].toArray()).deep.eq([3, 5, 8, 9])
+    expect(result2.bitsDataTemp.a["1"].toArray()).deep.eq([])
+    expect(result2.bitsDataTemp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
+    expect(result2.bitsDataTemp.b["2"].toArray()).deep.eq([9])
+    expect(result2.bitsDataTemp.b["3"].toArray()).deep.eq([3, 5, 8])
+    expect(result2.bitsDataTemp.c["3"].toArray()).deep.eq([3, 5, 8, 9])
   })
 
   it("checks matrix with one not existing value", () => {
@@ -52,11 +52,11 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
       ["a", 2],
       ["c", 2],
     ])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.c["3"].toArray()).deep.eq([])
   })
 
   it("checks matrix with disjunctive values", () => {
@@ -77,11 +77,11 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
         ["a", 2],
       ],
     ])
-    expect(result2.bits_data_temp.a["1"].toArray()).deep.eq([1, 2, 4, 6, 7])
-    expect(result2.bits_data_temp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
-    expect(result2.bits_data_temp.b["2"].toArray()).deep.eq([1, 4, 6, 9])
-    expect(result2.bits_data_temp.b["3"].toArray()).deep.eq([2, 3, 5, 7, 8])
-    expect(result2.bits_data_temp.c["3"].toArray()).deep.eq([
+    expect(result2.bitsDataTemp.a["1"].toArray()).deep.eq([1, 2, 4, 6, 7])
+    expect(result2.bitsDataTemp.a["2"].toArray()).deep.eq([3, 5, 8, 9])
+    expect(result2.bitsDataTemp.b["2"].toArray()).deep.eq([1, 4, 6, 9])
+    expect(result2.bitsDataTemp.b["3"].toArray()).deep.eq([2, 3, 5, 7, 8])
+    expect(result2.bitsDataTemp.c["3"].toArray()).deep.eq([
       1, 2, 3, 4, 5, 6, 7, 8, 9,
     ])
   })
@@ -99,11 +99,11 @@ describe("filtering and generating facets with matrix (9 rows in dataset)", () =
     expect([1, 2, 3, 4, 5, 6, 7, 8, 9]).deep.eq(result.c.toArray())
 
     const result2 = matrix(data, [[["a", 1]], [["b", 2]], [["c", 3]]])
-    expect(result2.bits_data_temp.a["1"].toArray()).deep.eq([1, 4, 6])
-    expect(result2.bits_data_temp.a["2"].toArray()).deep.eq([9])
-    expect(result2.bits_data_temp.b["2"].toArray()).deep.eq([1, 4, 6])
-    expect(result2.bits_data_temp.b["3"].toArray()).deep.eq([2, 7])
-    expect(result2.bits_data_temp.c["3"].toArray()).deep.eq([1, 4, 6])
+    expect(result2.bitsDataTemp.a["1"].toArray()).deep.eq([1, 4, 6])
+    expect(result2.bitsDataTemp.a["2"].toArray()).deep.eq([9])
+    expect(result2.bitsDataTemp.b["2"].toArray()).deep.eq([1, 4, 6])
+    expect(result2.bitsDataTemp.b["3"].toArray()).deep.eq([2, 7])
+    expect(result2.bitsDataTemp.c["3"].toArray()).deep.eq([1, 4, 6])
   })
 })
 
@@ -125,50 +125,50 @@ describe("filtering and generating facets for another dataset (3 rows in dataset
         ["a", 2],
       ],
     ])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([1])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([2])
-    expect(result.bits_data_temp.a["3"].toArray()).deep.eq([3])
-    expect(result.bits_data_temp.b["1"].toArray()).deep.eq([1])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([2])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([1, 2])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([2])
+    expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([3])
+    expect(result.bitsDataTemp.b["1"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([2])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.c["3"].toArray()).deep.eq([1, 2])
   })
 
   it("checks matrix with one disjunctive value", () => {
     const data = indexFields(items, fields)
 
     const result = matrix(data, [[["a", 1]]])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([1])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([2])
-    expect(result.bits_data_temp.a["3"].toArray()).deep.eq([3])
-    expect(result.bits_data_temp.b["1"].toArray()).deep.eq([1])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([2])
+    expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([3])
+    expect(result.bitsDataTemp.b["1"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.c["3"].toArray()).deep.eq([1])
   })
 
   it("checks matrix with many disjunctive values", () => {
     const data = indexFields(items, fields)
     const result = matrix(data, [[["a", 1]], [["b", 1]], [["c", 3]]])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([1])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.a["3"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["1"].toArray()).deep.eq([1])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["1"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.c["3"].toArray()).deep.eq([1])
   })
 
   it("checks matrix with negative filter values", () => {
     const data = indexFields(items, fields)
     const result = matrix(data, [["a", "-", 1]])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([2])
-    expect(result.bits_data_temp.a["3"].toArray()).deep.eq([3])
-    expect(result.bits_data_temp.b["1"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([2])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([3])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([2, 3])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([2])
+    expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([3])
+    expect(result.bitsDataTemp.b["1"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([2])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([3])
+    expect(result.bitsDataTemp.c["3"].toArray()).deep.eq([2, 3])
   })
 
   it("checks matrix with negative filter values (2)", () => {
@@ -177,13 +177,13 @@ describe("filtering and generating facets for another dataset (3 rows in dataset
       ["a", "-", 1],
       ["b", "-", 2],
     ])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.a["3"].toArray()).deep.eq([3])
-    expect(result.bits_data_temp.b["1"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["2"].toArray()).deep.eq([])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([3])
-    expect(result.bits_data_temp.c["3"].toArray()).deep.eq([3])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.a["3"].toArray()).deep.eq([3])
+    expect(result.bitsDataTemp.b["1"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["2"].toArray()).deep.eq([])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([3])
+    expect(result.bitsDataTemp.c["3"].toArray()).deep.eq([3])
   })
 })
 
@@ -201,20 +201,20 @@ describe("filtering and generating facets (4 rows in dataset)", function () {
     const data = indexFields(items, fields)
 
     const result = matrix(data)
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([1, 2])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([3, 4])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([1, 3])
-    expect(result.bits_data_temp.b["4"].toArray()).deep.eq([2, 4])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1, 2])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([3, 4])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([1, 3])
+    expect(result.bitsDataTemp.b["4"].toArray()).deep.eq([2, 4])
   })
 
   it("checks matrix with disjunctive values", () => {
     const data = indexFields(items, fields)
 
     const result = matrix(data, [[["a", 1]]])
-    expect(result.bits_data_temp.a["1"].toArray()).deep.eq([1, 2])
-    expect(result.bits_data_temp.a["2"].toArray()).deep.eq([3, 4])
-    expect(result.bits_data_temp.b["3"].toArray()).deep.eq([1])
-    expect(result.bits_data_temp.b["4"].toArray()).deep.eq([2])
+    expect(result.bitsDataTemp.a["1"].toArray()).deep.eq([1, 2])
+    expect(result.bitsDataTemp.a["2"].toArray()).deep.eq([3, 4])
+    expect(result.bitsDataTemp.b["3"].toArray()).deep.eq([1])
+    expect(result.bitsDataTemp.b["4"].toArray()).deep.eq([2])
   })
 
   it("checks matrix with disjunctive values", () => {
@@ -225,9 +225,9 @@ describe("filtering and generating facets (4 rows in dataset)", function () {
     expect([1, 3]).deep.eq(result.b.toArray())
 
     const result2 = matrix(data, [[["b", 3]], [["a", 1]]])
-    expect([1]).deep.eq(result2.bits_data_temp.a["1"].toArray())
-    expect([3]).deep.eq(result2.bits_data_temp.a["2"].toArray())
-    expect([1]).deep.eq(result2.bits_data_temp.b["3"].toArray())
-    expect([2]).deep.eq(result2.bits_data_temp.b["4"].toArray())
+    expect([1]).deep.eq(result2.bitsDataTemp.a["1"].toArray())
+    expect([3]).deep.eq(result2.bitsDataTemp.a["2"].toArray())
+    expect([1]).deep.eq(result2.bitsDataTemp.b["3"].toArray())
+    expect([2]).deep.eq(result2.bitsDataTemp.b["4"].toArray())
   })
 })

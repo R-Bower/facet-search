@@ -25,7 +25,7 @@ export const combinationIndices = function (facets: FacetData, filters: any) {
         const filterVal = disjunctiveFilter[1]
 
         filterKeys.push(filterKey)
-        facetUnion = facetUnion.or(facets.bits_data[filterKey][filterVal])
+        facetUnion = facetUnion.or(facets.bitsData[filterKey][filterVal])
         indices[filterKey] = facetUnion
       })
     }
@@ -43,9 +43,9 @@ export const matrix = (
 ): FacetData => {
   const tempFacet = clone(facets)
 
-  mapValues(tempFacet.bits_data, (values, key) => {
-    mapValues(tempFacet.bits_data[key], (facetIndices, key2) => {
-      tempFacet.bits_data_temp[key][key2] = tempFacet["bits_data"][key][key2]
+  mapValues(tempFacet.bitsData, (values, key) => {
+    mapValues(tempFacet.bitsData[key], (facetIndices, key2) => {
+      tempFacet.bitsDataTemp[key][key2] = tempFacet.bitsData[key][key2]
     })
   })
 
@@ -62,16 +62,16 @@ export const matrix = (
       const filterKey = filter[0]
       const filterVal = filter[1]
 
-      if (conjunctiveIndex && tempFacet.bits_data_temp[filterKey][filterVal]) {
+      if (conjunctiveIndex && tempFacet.bitsDataTemp[filterKey][filterVal]) {
         conjunctiveIndex =
-          tempFacet.bits_data_temp[filterKey][filterVal].and(conjunctiveIndex)
+          tempFacet.bitsDataTemp[filterKey][filterVal].and(conjunctiveIndex)
       } else if (
         conjunctiveIndex &&
-        !tempFacet.bits_data_temp[filterKey][filterVal]
+        !tempFacet.bitsDataTemp[filterKey][filterVal]
       ) {
         conjunctiveIndex = new BitSet([])
       } else {
-        conjunctiveIndex = tempFacet.bits_data_temp[filterKey][filterVal]
+        conjunctiveIndex = tempFacet.bitsDataTemp[filterKey][filterVal]
       }
     }
   })
@@ -80,10 +80,10 @@ export const matrix = (
   // @ts-expect-error the compiler doesn't evaluate the inner functions of
   // mapValues in the block above?
   if (conjunctiveIndex) {
-    mapValues(tempFacet.bits_data_temp, (values, key) => {
-      mapValues(tempFacet.bits_data_temp[key], (facetIndices, key2) => {
-        tempFacet.bits_data_temp[key][key2] =
-          tempFacet.bits_data_temp[key][key2].and(conjunctiveIndex)
+    mapValues(tempFacet.bitsDataTemp, (values, key) => {
+      mapValues(tempFacet.bitsDataTemp[key], (facetIndices, key2) => {
+        tempFacet.bitsDataTemp[key][key2] =
+          tempFacet.bitsDataTemp[key][key2].and(conjunctiveIndex)
       })
     })
   }
@@ -96,25 +96,24 @@ export const matrix = (
       const filterKey = filter[0]
       const filterVal = filter[2]
 
-      const negative_bits =
-        tempFacet.bits_data_temp[filterKey][filterVal].clone()
+      const negative_bits = tempFacet.bitsDataTemp[filterKey][filterVal].clone()
 
-      mapValues(tempFacet.bits_data_temp, (values, key) => {
-        mapValues(tempFacet.bits_data_temp[key], (facetIndices, key2) => {
-          tempFacet.bits_data_temp[key][key2] =
-            tempFacet.bits_data_temp[key][key2].andNot(negative_bits)
+      mapValues(tempFacet.bitsDataTemp, (values, key) => {
+        mapValues(tempFacet.bitsDataTemp[key], (facetIndices, key2) => {
+          tempFacet.bitsDataTemp[key][key2] =
+            tempFacet.bitsDataTemp[key][key2].andNot(negative_bits)
         })
       })
     }
   })
 
   // cross all facets with disjunctive index
-  mapValues(tempFacet.bits_data_temp, (values, key) => {
-    mapValues(tempFacet.bits_data_temp[key], (facetIndices, key2) => {
+  mapValues(tempFacet.bitsDataTemp, (values, key) => {
+    mapValues(tempFacet.bitsDataTemp[key], (facetIndices, key2) => {
       mapValues(disjunctiveIndices, (disjunctiveIndex, disjunctiveKey) => {
         if (disjunctiveKey !== key) {
-          tempFacet.bits_data_temp[key][key2] =
-            tempFacet.bits_data_temp[key][key2].and(disjunctiveIndex)
+          tempFacet.bitsDataTemp[key][key2] =
+            tempFacet.bitsDataTemp[key][key2].and(disjunctiveIndex)
         }
       })
     })
@@ -126,16 +125,12 @@ export const matrix = (
 export function indexFields<I extends Item>(
   items: I[],
   fields: string[],
-): {
-  bits_data: BitSetDataMap
-  bits_data_temp: BitSetDataMap
-  data: BitDataMap
-} {
+): FacetData {
   fields = fields || []
 
-  const facets = {
-    bits_data: {} as BitSetDataMap,
-    bits_data_temp: {} as BitSetDataMap,
+  const facets: FacetData = {
+    bitsData: {} as BitSetDataMap,
+    bitsDataTemp: {} as BitSetDataMap,
     data: {} as BitDataMap,
   }
 
@@ -199,14 +194,14 @@ export function indexFields<I extends Item>(
     .value()
 
   facets.data = mapValues(facets.data, function (values, field) {
-    if (!facets.bits_data[field]) {
-      facets.bits_data[field] = {}
-      facets.bits_data_temp[field] = {}
+    if (!facets.bitsData[field]) {
+      facets.bitsData[field] = {}
+      facets.bitsDataTemp[field] = {}
     }
 
     return mapValues(values, function (indexes, filter) {
       const sortedIndices = sortBy(indexes)
-      facets.bits_data[field][filter] = new BitSet(sortedIndices)
+      facets.bitsData[field][filter] = new BitSet(sortedIndices)
       return sortedIndices
     })
   })

@@ -9,7 +9,7 @@ export type FilterValue = Array<string | number>
 
 export interface Pagination {
   page: number
-  per_page: number
+  perPage: number
   total: number
 }
 
@@ -27,7 +27,7 @@ export interface AggregationOptions<A extends string> {
   /** @default 1 */
   page?: number
   /** @default 10 */
-  per_page?: number
+  perPage?: number
   query?: string
 }
 
@@ -39,19 +39,14 @@ export interface SearchOptions<
   /** A custom function to filter values */
   _ids?: number[]
   aggregations?: Record<A, Aggregation>
-  filter?: (item: I) => boolean
   filters?: Record<string, FilterValue>
   ids?: number[]
   /** @default false */
-  isExactSearch?: boolean
-  /** @default false */
-  is_all_filtered_items?: boolean
+  isAllFilteredItems?: boolean
   /** @default 1 */
   page?: number
   /** @default 12 */
-  per_page?: number
-  /** @default false */
-  removeStopWordFilter?: boolean
+  perPage?: number
   /** The name of a sort defined in the configuration's sortings, or a new custom one */
   sort?: S | Sorting<I>
 }
@@ -96,8 +91,8 @@ export type BitDataMap = Record<string, Record<string, number[]>>
 export type BitSetDataMap = Record<string, Record<string, BitSet>>
 
 export type FacetData = {
-  bits_data: BitSetDataMap
-  bits_data_temp: BitSetDataMap
+  bitsData: BitSetDataMap
+  bitsDataTemp: BitSetDataMap
   data: BitDataMap
   ids?: BitSet
 }

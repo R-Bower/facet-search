@@ -1,4 +1,4 @@
-import {clone} from "lodash-es"
+import {clone} from "lodash"
 
 import {Facets} from "./facets"
 import {search} from "./search"
@@ -18,7 +18,7 @@ export function aggregation<
   configuration: Configuration<I, S, A>,
   facets: Facets<I, S, A>,
 ) {
-  const perPage = options.per_page || 10
+  const perPage = options.perPage || 10
   const page = options.page || 1
 
   if (
@@ -33,7 +33,7 @@ export function aggregation<
   const searchInput = clone(options)
 
   searchInput.page = 1
-  searchInput.per_page = 0
+  searchInput.perPage = 0
 
   if (!options.name) {
     throw new Error("field name is required")
@@ -54,7 +54,7 @@ export function aggregation<
     },
     pagination: {
       page,
-      per_page: perPage,
+      perPage,
       total: buckets.length,
     },
   }

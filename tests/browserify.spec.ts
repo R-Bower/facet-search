@@ -45,53 +45,43 @@ describe("itemjs general tests", function () {
 
   it("makes search with pagination", () => {
     let result = facetSearch.search({
-      per_page: 1,
+      perPage: 1,
     })
     expect(result.data.items.length).eq(1)
 
     result = facetSearch.search({
       page: 4,
-      per_page: 1,
+      perPage: 1,
     })
     expect(result.data.items.length).eq(0)
 
     result = facetSearch.search({
       page: 3,
-      per_page: 1,
+      perPage: 1,
     })
     expect(result.data.items.length).eq(1)
   })
 
   it("makes search with pagination, and is_all_filtered_items", () => {
     let result = facetSearch.search({
-      is_all_filtered_items: true,
-      per_page: 1,
+      isAllFilteredItems: true,
+      perPage: 1,
     })
     expect(result.data.items.length).eq(1)
     expect(result.data?.allFilteredItems?.length).eq(3)
 
     result = facetSearch.search({
-      is_all_filtered_items: false,
-      per_page: 1,
+      isAllFilteredItems: false,
+      perPage: 1,
     })
     expect(result.data.items.length).eq(1)
     expect(result.data.allFilteredItems).eq(undefined)
 
     result = facetSearch.search({
-      per_page: 1,
+      perPage: 1,
     })
     expect(result.data.items.length).eq(1)
     expect(result.data.allFilteredItems).eq(undefined)
-  })
-
-  it("makes search with pagination and filter", () => {
-    const result = facetSearch.search({
-      filter: (item) => item.tags.includes("a"),
-      page: 3,
-      per_page: 1,
-    })
-
-    expect(result.data.items.length).eq(1)
   })
 
   it("makes search with aggregation filters", () => {

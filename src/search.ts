@@ -1,5 +1,5 @@
 import BitSet from "bitset"
-import {orderBy} from "lodash-es"
+import {orderBy} from "lodash"
 
 import {Facets} from "./facets"
 import {getBuckets} from "./get-buckets"
@@ -16,7 +16,7 @@ export interface SearchResult<I extends Record<string, unknown>> {
   }
   pagination: {
     page: number
-    per_page: number
+    perPage: number
     total: number
   }
 }
@@ -31,9 +31,9 @@ export function search<
   configuration: Configuration<I, S, A>,
   facets: Facets<I, S, A>,
 ): SearchResult<I> {
-  const perPage = input.per_page || 12
+  const perPage = input.perPage || 12
   const page = input.page || 1
-  const isAllFilteredItems = input.is_all_filtered_items || false
+  const isAllFilteredItems = input.isAllFilteredItems || false
 
   let queryIds
   // all ids bitmap
@@ -110,7 +110,7 @@ export function search<
     },
     pagination: {
       page,
-      per_page: perPage,
+      perPage: perPage,
       total: filteredIndices.length,
     },
   }

@@ -1,5 +1,5 @@
 import BitSet from "bitset"
-import {clone, mapValues} from "lodash-es"
+import {clone, mapValues} from "lodash"
 
 import {facetIds, indexFields, inputToFacetFilters, matrix} from "./helpers"
 import {
@@ -84,21 +84,21 @@ export class Facets<I extends Item, S extends string, A extends string> {
     const filters = inputToFacetFilters(input, config)
     const temp_data = matrix(this.facets, filters)
 
-    tempFacet.bits_data_temp = temp_data.bits_data_temp
+    tempFacet.bitsDataTemp = temp_data.bitsDataTemp
 
     if (data.queryIds) {
-      mapValues(tempFacet.bits_data_temp, (values, key) => {
-        mapValues(tempFacet.bits_data_temp[key], (facet_indexes, key2) => {
+      mapValues(tempFacet.bitsDataTemp, (values, key) => {
+        mapValues(tempFacet.bitsDataTemp[key], (facet_indexes, key2) => {
           // @ts-expect-error TS not properly detecting that queryIds is defined
-          tempFacet.bits_data_temp[key][key2] = data.queryIds.and(
-            tempFacet.bits_data_temp[key][key2],
+          tempFacet.bitsDataTemp[key][key2] = data.queryIds.and(
+            tempFacet.bitsDataTemp[key][key2],
           )
         })
       })
     }
 
     // calculating ids (for a list of items)
-    tempFacet.ids = facetIds(tempFacet.bits_data_temp, input.filters ?? {})
+    tempFacet.ids = facetIds(tempFacet.bitsDataTemp, input.filters ?? {})
 
     return tempFacet
   }

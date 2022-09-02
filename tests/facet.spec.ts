@@ -48,7 +48,7 @@ describe("aggregation / facet", function () {
     const result = facetSearch.aggregation({
       name: "genres",
       page: 1,
-      per_page: 1,
+      perPage: 1,
     })
 
     expect(result.data.buckets.length).eq(1)
@@ -58,7 +58,7 @@ describe("aggregation / facet", function () {
     const result = facetSearch.aggregation({
       name: "genres",
       page: 1,
-      per_page: 12,
+      perPage: 12,
     })
 
     expect(result.data.buckets.length).eq(12)

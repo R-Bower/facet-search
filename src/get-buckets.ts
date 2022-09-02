@@ -1,4 +1,4 @@
-import {chain, mapValues, orderBy} from "lodash-es"
+import {chain, mapValues, orderBy} from "lodash"
 
 import {ensureArray} from "./helpers"
 import {
@@ -17,7 +17,7 @@ export function getBuckets<I extends Item>(
 ): Record<string, {buckets: Buckets<I>; name: string; position: number}> {
   let position = 1
 
-  return mapValues(data.bits_data_temp, (v, k: string) => {
+  return mapValues(data.bitsDataTemp, (v, k: string) => {
     let order, sort, size
     let chosenFiltersOnTop, hideZeroDocCount: boolean
 
