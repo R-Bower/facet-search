@@ -1,7 +1,11 @@
 {
-  "name": "@rbower/facet-search",
+  "name": "facet-search",
   "version": "1.0.0",
   "sideEffects": false,
+  "repository": {
+    "url": "https://github.com/R-Bower/facet-search"
+  },
+  "private": false,
   "main": "dist/facets.cjs.js",
   "module": "dist/facets.esm.js",
   "types": "dist/index.d.ts",
