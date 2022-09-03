@@ -5,7 +5,7 @@ import {
   BitDataMap,
   BitSetDataMap,
   FacetData,
-  FilterField,
+  FilterConfig,
   FilterValue,
   IndexFieldsResult,
   Item,
@@ -73,8 +73,7 @@ export function matrix(
       ) {
         conjunctiveIndex = new BitSet([])
       } else {
-        console.debug(tempFacet.bitsDataTemp)
-        conjunctiveIndex = tempFacet.bitsDataTemp[filterKey][filterVal]
+        conjunctiveIndex = get(tempFacet.bitsDataTemp, filterKey)[filterVal]
       }
     }
   })
@@ -158,13 +157,15 @@ export function buildFacets<I extends Item>(
         if (Array.isArray(fieldValue)) {
           fieldValue.forEach((v) => {
             if (Array.isArray(v)) {
-              console.debug("Tuples aren't supported yet")
-              return
+              return console.error(
+                "Field targets should be simple values, not arrays",
+              )
             }
 
             if (typeof v === "object") {
-              console.debug("Nested properties aren't supported yet")
-              return
+              return console.error(
+                "Field targets should be simple values, not objects",
+              )
             }
 
             if (!facets.data[field][v]) {
@@ -210,15 +211,17 @@ export function buildFacets<I extends Item>(
 export function facetIds(
   facetData: BitSetDataMap,
   inputFilters: Record<string, FilterValue>,
+  filterFields: Record<string, FilterConfig>,
 ): BitSet | undefined {
   let output = new BitSet([])
   let i = 0
 
-  mapValues(inputFilters, function (filters, field) {
-    if (filters) {
-      filters.forEach((filter) => {
+  mapValues(inputFilters, (filterValues, key) => {
+    if (filterValues) {
+      filterValues.forEach((filter) => {
         ++i
-        output = output.or(facetData[field][filter])
+        const filterConfig = filterFields[key]
+        output = output.or(get(facetData, filterConfig?.field || key)[filter])
       })
     }
   })
@@ -231,7 +234,7 @@ export function facetIds(
 }
 
 export function mergeAggregations<A extends string>(
-  aggregations: Record<A, FilterField>,
+  aggregations: Record<A, FilterConfig>,
   inputFilters?: Record<string, FilterValue>,
 ) {
   return mapValues(clone(aggregations), (val, key) => {
@@ -252,7 +255,7 @@ export function mergeAggregations<A extends string>(
 
 export function inputToFacetFilters<I extends Item, S extends string>(
   input: SearchInput<I, S>,
-  config: Record<string, FilterField>,
+  config: Record<string, FilterConfig>,
 ) {
   const filters: any[] = []
 
@@ -263,14 +266,15 @@ export function inputToFacetFilters<I extends Item, S extends string>(
         console.error("Field not found, check key", key)
         return
       }
+      const field = configFilter.field ?? key
       if (configFilter.and !== false) {
         mapValues(values, (values2) => {
-          filters.push([key, values2])
+          filters.push([field, values2])
         })
       } else {
         const temp: [string, any][] = []
         mapValues(values, (values2) => {
-          temp.push([key, values2])
+          temp.push([field, values2])
         })
 
         filters.push(temp)

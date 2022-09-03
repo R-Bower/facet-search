@@ -4,7 +4,7 @@ import {ensureArray} from "./helpers"
 import {
   Buckets,
   FacetData,
-  FilterField,
+  FilterConfig,
   FilterValue,
   Item,
   Order,
@@ -13,7 +13,7 @@ import {
 export function getBuckets<I extends Item>(
   data: FacetData,
   inputFilters: Record<string, FilterValue>,
-  aggregations: Record<string, FilterField> = {},
+  aggregations: Record<string, FilterConfig> = {},
 ): Record<string, {buckets: Buckets<I>; name: string; position: number}> {
   let position = 1
 

@@ -1,3 +1,5 @@
+import {expect} from "chai"
+
 import {FacetSearch} from "../src"
 import moviesNested from "./fixtures/movies-nested.json"
 
@@ -19,7 +21,7 @@ type Movie = {
   tags: string[]
 }
 
-describe.only("nested facets", () => {
+describe("nested facets", () => {
   const searcher = new FacetSearch<Movie, string>(moviesNested, {
     filterFields: {
       description: {
@@ -33,11 +35,24 @@ describe.only("nested facets", () => {
       },
     },
   })
-  const result = searcher.search({
-    filters: {
-      name: ["The Godfather"],
-    },
+
+  it("applies filters to nested fields", () => {
+    const result = searcher.search({
+      filters: {
+        name: ["The Godfather"],
+      },
+    })
+
+    expect(result.data.items).deep.eq([moviesNested[1]])
   })
-  console.debug(result.data.facets)
-  console.debug(result.data.items)
+
+  it("applies filters to nested array fields", () => {
+    const result = searcher.search({
+      filters: {
+        director: ["Francis Ford Coppola"],
+      },
+    })
+
+    expect(result.data.items).deep.eq([moviesNested[1], moviesNested[3]])
+  })
 })

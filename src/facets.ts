@@ -2,13 +2,19 @@ import BitSet from "bitset"
 import {clone, mapValues} from "lodash-es"
 
 import {buildFacets, facetIds, inputToFacetFilters, matrix} from "./helpers"
-import {Configuration, FacetData, FilterField, Item, SearchInput} from "./types"
+import {
+  Configuration,
+  FacetData,
+  FilterConfig,
+  Item,
+  SearchInput,
+} from "./types"
 
 /**
  * responsible for making faceted search
  */
 export class Facets<I extends Item, S extends string> {
-  private readonly config: Record<string, FilterField>
+  private readonly config: Record<string, FilterConfig>
   private readonly facets: FacetData
   private readonly itemsMap: Record<number, I & {_id: number}>
   private readonly items: Array<I & {_id: number}>
@@ -18,7 +24,7 @@ export class Facets<I extends Item, S extends string> {
   constructor(items: I[], configuration: Configuration<I, S> = {}) {
     configuration = configuration || {}
     configuration.filterFields =
-      configuration.filterFields || ({} as Record<string, FilterField>)
+      configuration.filterFields || ({} as Record<string, FilterConfig>)
     this.config = configuration.filterFields
     const {facets, ids, indexedItems, itemsMap} = buildFacets(
       items,
@@ -83,7 +89,11 @@ export class Facets<I extends Item, S extends string> {
     }
 
     // calculating ids (for a list of items)
-    tempFacet.ids = facetIds(tempFacet.bitsDataTemp, input.filters ?? {})
+    tempFacet.ids = facetIds(
+      tempFacet.bitsDataTemp,
+      input.filters ?? {},
+      input.filterConfig ?? {},
+    )
 
     return tempFacet
   }

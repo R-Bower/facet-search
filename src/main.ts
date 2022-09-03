@@ -29,7 +29,7 @@ export class FacetSearch<I extends Item, S extends string> {
       this.facets,
       {
         ...input,
-        aggregations: mergeAggregations(
+        filterConfig: mergeAggregations(
           this.configuration.filterFields ?? {},
           input.filters,
         ),
