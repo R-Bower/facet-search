@@ -545,9 +545,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rbower/facets@workspace:.":
+"@rbower/facet-search@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@rbower/facets@workspace:."
+  resolution: "@rbower/facet-search@workspace:."
   dependencies:
     "@babel/core": ^7.18.13
     "@babel/preset-typescript": ^7.18.6

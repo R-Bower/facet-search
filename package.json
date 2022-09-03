@@ -1,6 +1,6 @@
 {
   "name": "@rbower/facet-search",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "sideEffects": false,
   "main": "dist/facets.cjs.js",
   "module": "dist/facets.esm.js",
