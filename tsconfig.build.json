@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "outFile": "build/index.d.ts",
+    "outFile": "dist/index.d.ts",
     "noEmit": false,
     "emitDeclarationOnly": true,
     "sourceMap": true
   },
-  "include": ["./src/index.ts"],
+  "include": ["src/index.ts"],
 }

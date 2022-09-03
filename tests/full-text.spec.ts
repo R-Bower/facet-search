@@ -5,9 +5,9 @@ import items from "./fixtures/items.json"
 
 describe("fulltext search", () => {
   const searcher = new FacetSearch(items, {
-    aggregations: {
-      actors: {conjunction: true},
-      tags: {conjunction: true},
+    filterFields: {
+      actors: {},
+      tags: {},
     },
     searchableFields: ["actors", "name"],
   })

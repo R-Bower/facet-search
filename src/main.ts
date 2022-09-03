@@ -21,20 +21,20 @@ export class FacetSearch<I extends Item, S extends string> {
   }
 
   aggregation(options: AggregationOptions): AggregationResult<I> {
-    return aggregation(options, this.configuration, this.facets)
+    return aggregation(this.facets, options, this.configuration)
   }
 
   search(input: SearchInput<I, S> = {}) {
     return search(
+      this.facets,
       {
         ...input,
         aggregations: mergeAggregations(
-          this.configuration.aggregations ?? {},
+          this.configuration.filterFields ?? {},
           input.filters,
         ),
       },
       this.configuration,
-      this.facets,
     )
   }
 }

@@ -25,7 +25,8 @@ export interface Sorting<I extends Record<string, unknown>> {
 }
 
 export interface AggregationOptions {
-  conjunction?: boolean
+  // AND query (results have to fit all selected facet-values), defaults to true
+  and?: boolean
   filters?: Record<string, FilterValue>
   name: string
   /** @default 1 */
@@ -41,7 +42,7 @@ export type FullTextSearchInput = {
 }
 
 export interface SearchInput<I extends Item, S extends string> {
-  aggregations?: Record<string, Aggregation>
+  aggregations?: Record<string, FilterField>
   filters?: Record<string, FilterValue>
   ids?: number[]
   /** @default false */
@@ -65,9 +66,10 @@ export type Buckets<I extends Item> = Array<Bucket<I>>
 
 export type Sort = "term" | "count" | "selected" | "key" | "docCount"
 
-export type Aggregation = {
+export type FilterField = {
+  // AND query (results have to fit all selected facet-values), defaults to true
+  and?: boolean
   chosenFiltersOnTop?: boolean
-  conjunction?: boolean
   // Optional field for targeting deeply-nested values.
   field?: string
   filters?: FilterValue
@@ -82,7 +84,7 @@ export type Aggregation = {
 
 /** Configuration for FacetSearch */
 export interface Configuration<I extends Item, S extends string> {
-  aggregations?: Record<string, Aggregation>
+  filterFields?: Record<string, FilterField>
   searchableFields?: string[]
   /** @default [] */
   sortings?: Record<S, Sorting<I>>

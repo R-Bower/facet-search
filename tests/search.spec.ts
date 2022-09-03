@@ -6,22 +6,12 @@ import items from "./fixtures/items.json"
 
 describe("search", () => {
   const configuration: Configuration<typeof items[0], string> = {
-    aggregations: {
-      actors: {
-        conjunction: true,
-      },
-      category: {
-        conjunction: true,
-      },
-      in_cinema: {
-        conjunction: true,
-      },
-      tags: {
-        conjunction: true,
-      },
-      year: {
-        conjunction: true,
-      },
+    filterFields: {
+      actors: {},
+      category: {},
+      in_cinema: {},
+      tags: {},
+      year: {},
     },
   }
 
@@ -36,9 +26,9 @@ describe("search", () => {
     expect(result.data.items[0].in_cinema).eq(false)
 
     expect(result.data.items[0].in_cinema).eq(false)
-    expect(result.data.aggregations.in_cinema.buckets[0].docCount).eq(3)
-    expect(result.data.aggregations.in_cinema.buckets[1].docCount).eq(1)
-    expect(result.data.aggregations.in_cinema.buckets.length).eq(2)
+    expect(result.data.facets.in_cinema.buckets[0].docCount).eq(3)
+    expect(result.data.facets.in_cinema.buckets[1].docCount).eq(1)
+    expect(result.data.facets.in_cinema.buckets.length).eq(2)
   })
 
   it("searches with two filters", () => {
@@ -50,7 +40,7 @@ describe("search", () => {
     })
 
     expect(result.data.items.length).eq(2)
-    expect(result.data.aggregations.tags.buckets[0].docCount).eq(2)
+    expect(result.data.facets.tags.buckets[0].docCount).eq(2)
   })
 
   it("makes search with empty filters", () => {
@@ -64,7 +54,7 @@ describe("search", () => {
 
 describe("no configuration", () => {
   const configuration = {
-    aggregations: {},
+    filterFields: {},
   }
 
   it("searches with two filters", () => {

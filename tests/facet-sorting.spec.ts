@@ -29,7 +29,7 @@ const items: {genres: string | string[]}[] = [
 describe("facet sorting", function () {
   it("sort by key", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           sort: "key",
         },
@@ -49,7 +49,7 @@ describe("facet sorting", function () {
 
   it("sort by key (field, not array)", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           order: "desc",
           sort: "key",
@@ -70,7 +70,7 @@ describe("facet sorting", function () {
 
   it("sort by key descending", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           order: "desc",
           sort: "key",
@@ -91,7 +91,7 @@ describe("facet sorting", function () {
 
   it("sort by docCount", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           order: "desc",
           sort: "docCount",
@@ -112,7 +112,7 @@ describe("facet sorting", function () {
 
   it("sort by count", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           order: "desc",
           sort: "count",
@@ -133,7 +133,7 @@ describe("facet sorting", function () {
 
   it("sort by docCount and key and order key desc", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           order: ["desc", "desc"],
           sort: ["docCount", "key"],
@@ -154,7 +154,7 @@ describe("facet sorting", function () {
 
   it("sort by selected, key and order by desc, asc if sort is term", () => {
     const resultArray = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           order: ["desc", "asc"],
           sort: ["selected", "key"],
@@ -165,7 +165,7 @@ describe("facet sorting", function () {
     })
 
     const resultTerm = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           sort: "term",
         },
@@ -179,7 +179,7 @@ describe("facet sorting", function () {
 
   it("sort by selected if chosen_filters_on_top is not set", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           sort: "term",
         },
@@ -202,7 +202,7 @@ describe("facet sorting", function () {
 
   it("does not sort by selected if chosen_filters_on_top is false", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           chosenFiltersOnTop: false,
           sort: "key",
@@ -226,7 +226,7 @@ describe("facet sorting", function () {
 
   it("excludes filters with zero docCount if hideZeroDocCount is true", () => {
     const aggregation = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         genres: {
           hideZeroDocCount: true,
         },

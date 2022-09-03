@@ -2,10 +2,10 @@ import BitSet from "bitset"
 import {chain, clone, get, mapValues, orderBy, sortBy} from "lodash-es"
 
 import {
-  Aggregation,
   BitDataMap,
   BitSetDataMap,
   FacetData,
+  FilterField,
   FilterValue,
   IndexFieldsResult,
   Item,
@@ -73,6 +73,7 @@ export function matrix(
       ) {
         conjunctiveIndex = new BitSet([])
       } else {
+        console.debug(tempFacet.bitsDataTemp)
         conjunctiveIndex = tempFacet.bitsDataTemp[filterKey][filterVal]
       }
     }
@@ -123,7 +124,7 @@ export function matrix(
   return tempFacet
 }
 
-export function indexFields<I extends Item>(
+export function buildFacets<I extends Item>(
   items: I[],
   fields: string[],
 ): IndexFieldsResult<I> {
@@ -230,7 +231,7 @@ export function facetIds(
 }
 
 export function mergeAggregations<A extends string>(
-  aggregations: Record<A, Aggregation>,
+  aggregations: Record<A, FilterField>,
   inputFilters?: Record<string, FilterValue>,
 ) {
   return mapValues(clone(aggregations), (val, key) => {
@@ -251,13 +252,18 @@ export function mergeAggregations<A extends string>(
 
 export function inputToFacetFilters<I extends Item, S extends string>(
   input: SearchInput<I, S>,
-  config: Record<string, Aggregation>,
+  config: Record<string, FilterField>,
 ) {
   const filters: any[] = []
 
   mapValues(input.filters, function (values, key) {
     if (values && values.length) {
-      if (config[key].conjunction !== false) {
+      const configFilter = get(config, key)
+      if (!configFilter) {
+        console.error("Field not found, check key", key)
+        return
+      }
+      if (configFilter.and !== false) {
         mapValues(values, (values2) => {
           filters.push([key, values2])
         })

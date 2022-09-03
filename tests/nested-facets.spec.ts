@@ -19,9 +19,9 @@ type Movie = {
   tags: string[]
 }
 
-describe("Nested facets", () => {
+describe.only("nested facets", () => {
   const searcher = new FacetSearch<Movie, string>(moviesNested, {
-    aggregations: {
+    filterFields: {
       description: {
         field: "details.description",
       },
@@ -33,4 +33,11 @@ describe("Nested facets", () => {
       },
     },
   })
+  const result = searcher.search({
+    filters: {
+      name: ["The Godfather"],
+    },
+  })
+  console.debug(result.data.facets)
+  console.debug(result.data.items)
 })

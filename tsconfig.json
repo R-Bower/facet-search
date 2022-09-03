@@ -20,5 +20,5 @@
     "strict": true,
     "target": "ESNext"
   },
-  "include": ["./src/*.ts", "tests/*.ts"]
+  "include": ["src/*", "tests/*", "scripts/*"]
 }

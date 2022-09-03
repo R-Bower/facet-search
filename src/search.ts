@@ -8,11 +8,11 @@ import {Buckets, Configuration, Item, SearchInput} from "./types"
 
 export interface SearchResult<I extends Item> {
   data: {
-    aggregations: Record<
+    allFilteredItems?: I[]
+    facets: Record<
       string,
       {buckets: Buckets<I>; name: string; position: number}
     >
-    allFilteredItems?: I[]
     items: I[]
   }
   pagination: {
@@ -23,9 +23,9 @@ export interface SearchResult<I extends Item> {
 }
 
 export function search<I extends Item, S extends string>(
+  facets: Facets<I, S>,
   input: SearchInput<I, S> = {},
   configuration: Configuration<I, S>,
-  facets: Facets<I, S>,
 ): SearchResult<I> {
   const perPage = input.perPage || 12
   const page = input.page || 1
@@ -100,12 +100,12 @@ export function search<I extends Item, S extends string>(
 
   return {
     data: {
-      aggregations: getBuckets(
+      allFilteredItems,
+      facets: getBuckets(
         facetResult,
         input.filters ?? {},
-        configuration.aggregations,
+        configuration.filterFields,
       ),
-      allFilteredItems,
       items: filteredItems.map(({_id, ...item}) => item) as I[],
     },
     pagination: {

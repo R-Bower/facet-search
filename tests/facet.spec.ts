@@ -4,19 +4,11 @@ import {FacetSearch} from "../src"
 import movies from "./fixtures/movies.json"
 
 const configuration = {
-  aggregations: {
-    actors: {
-      conjunction: true,
-    },
-    director: {
-      conjunction: true,
-    },
-    genres: {
-      conjunction: true,
-    },
-    year: {
-      conjunction: true,
-    },
+  filterFields: {
+    actors: {},
+    director: {},
+    genres: {},
+    year: {},
   },
 }
 
@@ -30,7 +22,7 @@ describe("aggregation / facet", function () {
       })
     } catch (err: unknown) {
       expect((err as {message: string}).message).eq(
-        'aggregation "category2" is missing from config',
+        'filterField "category2" is missing from config',
       )
     }
   })

@@ -14,18 +14,18 @@ import {
  * useful for autocomplete or list all aggregation options
  */
 export function aggregation<I extends Item, S extends string>(
+  facets: Facets<I, S>,
   options: AggregationOptions,
   configuration: Configuration<I, S>,
-  facets: Facets<I, S>,
 ): AggregationResult<I> {
   const perPage = options.perPage || 10
   const page = options.page || 1
 
   if (
     options.name &&
-    (!configuration.aggregations || !configuration.aggregations[options.name])
+    (!configuration.filterFields || !configuration.filterFields[options.name])
   ) {
-    throw new Error(`aggregation "${options.name}" is missing from config`)
+    throw new Error(`filterField "${options.name}" is missing from config`)
   }
 
   const searchInput = clone(options)
@@ -37,14 +37,14 @@ export function aggregation<I extends Item, S extends string>(
     throw new Error("field name is required")
   }
 
-  if (!configuration.aggregations) {
-    configuration.aggregations = {}
+  if (!configuration.filterFields) {
+    configuration.filterFields = {}
   }
 
-  configuration.aggregations[options.name].size = 10000
+  configuration.filterFields[options.name].size = 10000
 
-  const result = search(searchInput, configuration, facets)
-  const buckets = result.data.aggregations[options.name].buckets
+  const result = search(facets, searchInput, configuration)
+  const buckets = result.data.facets[options.name].buckets
 
   return {
     data: {

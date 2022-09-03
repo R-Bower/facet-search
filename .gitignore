@@ -5,6 +5,7 @@
 /build
 /dist
 .rollup.cache
+stats.yml
 
 # Misc
 .DS_Store

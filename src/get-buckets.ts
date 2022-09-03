@@ -2,9 +2,9 @@ import {chain, mapValues, orderBy} from "lodash-es"
 
 import {ensureArray} from "./helpers"
 import {
-  Aggregation,
   Buckets,
   FacetData,
+  FilterField,
   FilterValue,
   Item,
   Order,
@@ -13,7 +13,7 @@ import {
 export function getBuckets<I extends Item>(
   data: FacetData,
   inputFilters: Record<string, FilterValue>,
-  aggregations: Record<string, Aggregation> = {},
+  aggregations: Record<string, FilterField> = {},
 ): Record<string, {buckets: Buckets<I>; name: string; position: number}> {
   let position = 1
 

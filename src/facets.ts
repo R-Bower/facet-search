@@ -1,14 +1,14 @@
 import BitSet from "bitset"
 import {clone, mapValues} from "lodash-es"
 
-import {facetIds, indexFields, inputToFacetFilters, matrix} from "./helpers"
-import {Aggregation, Configuration, FacetData, Item, SearchInput} from "./types"
+import {buildFacets, facetIds, inputToFacetFilters, matrix} from "./helpers"
+import {Configuration, FacetData, FilterField, Item, SearchInput} from "./types"
 
 /**
  * responsible for making faceted search
  */
 export class Facets<I extends Item, S extends string> {
-  private readonly config: Record<string, Aggregation>
+  private readonly config: Record<string, FilterField>
   private readonly facets: FacetData
   private readonly itemsMap: Record<number, I & {_id: number}>
   private readonly items: Array<I & {_id: number}>
@@ -17,12 +17,16 @@ export class Facets<I extends Item, S extends string> {
 
   constructor(items: I[], configuration: Configuration<I, S> = {}) {
     configuration = configuration || {}
-    configuration.aggregations =
-      configuration.aggregations || ({} as Record<string, Aggregation>)
-    this.config = configuration.aggregations
-    const {facets, ids, indexedItems, itemsMap} = indexFields(
+    configuration.filterFields =
+      configuration.filterFields || ({} as Record<string, FilterField>)
+    this.config = configuration.filterFields
+    const {facets, ids, indexedItems, itemsMap} = buildFacets(
       items,
-      Object.keys(this.config),
+      // collect the keys from the filterFields configuration
+      Object.keys(this.config).map((key) => {
+        const field = this.config[key]?.field
+        return field || key
+      }),
     )
     this.items = indexedItems
     this.facets = facets

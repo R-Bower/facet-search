@@ -86,7 +86,7 @@ describe("itemjs general tests", function () {
 
   it("makes search with aggregation filters", () => {
     const searcher = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         actors: {},
         tags: {},
       },
@@ -110,20 +110,20 @@ describe("itemjs general tests", function () {
 
   it("makes search with aggregation filters with single value object", () => {
     const searcher = new FacetSearch(similarItems, {
-      aggregations: {
+      filterFields: {
         tags: {},
       },
     })
 
     const result = searcher.search()
     expect(result.data.items.length).eq(3)
-    expect(result.data.aggregations.tags.buckets[0].docCount).eq(2)
-    expect(result.data.aggregations.tags.buckets[1].docCount).eq(1)
+    expect(result.data.facets.tags.buckets[0].docCount).eq(2)
+    expect(result.data.facets.tags.buckets[1].docCount).eq(1)
   })
 
-  it("makes aggregations when configuration supplied", () => {
+  it("makes facets when configuration supplied", () => {
     const searcher = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         tags: {
           size: 10,
         },
@@ -133,10 +133,10 @@ describe("itemjs general tests", function () {
 
     expect(result.data.items.length).eq(3)
     //assert.equal(result.data.aggregations.tags.name, 'tags');
-    expect(result.data.aggregations.tags.buckets.length).eq(6)
+    expect(result.data.facets.tags.buckets.length).eq(6)
   })
 
-  it("makes aggregations for non array (string) fields", () => {
+  it("makes facets for non array (string) fields", () => {
     const items = [
       {
         name: "movie1",
@@ -153,7 +153,7 @@ describe("itemjs general tests", function () {
     ]
 
     const searcher = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         tags: {
           size: 10,
         },
@@ -162,11 +162,11 @@ describe("itemjs general tests", function () {
     const result = searcher.search({})
     expect(result.data.items.length).eq(3)
     //assert.equal(result.data.aggregations.tags.name, 'tags');
-    expect(result.data.aggregations.tags.buckets.length).eq(1)
-    expect(result.data.aggregations.tags.buckets[0].docCount).eq(3)
+    expect(result.data.facets.tags.buckets.length).eq(1)
+    expect(result.data.facets.tags.buckets[0].docCount).eq(3)
   })
 
-  it("makes aggregations for undefined field", () => {
+  it("makes facets for undefined field", () => {
     const items = [
       {
         name: "movie1",
@@ -180,7 +180,7 @@ describe("itemjs general tests", function () {
     ]
 
     const searcher = new FacetSearch(items, {
-      aggregations: {
+      filterFields: {
         tags: {
           size: 10,
         },

@@ -2,15 +2,19 @@
   "name": "@rbower/facets",
   "version": "0.0.0",
   "sideEffects": false,
-  "main": "build/facets.cjs.js",
-  "module": "build/facets.esm.js",
-  "types": "build/index.d.ts",
+  "main": "dist/facets.cjs.js",
+  "module": "dist/facets.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "test": "esno node_modules/.bin/mocha tests/**.spec.ts",
-    "build": "npm-run-all clean compile:source compile:types",
+    "build": "npm-run-all clean compile-source compile-types generate-type-files",
     "clean": "rimraf ./build",
-    "compile:source": "rollup --config rollup.config.js",
-    "compile:types": "tsc -P tsconfig.build.json",
+    "compile-source": "rollup --config rollup.config.js",
+    "compile-types": "tsc -P tsconfig.build.json",
+    "generate-type-files": "esno scripts/post-build.ts",
     "watch": "tsc -P tsconfig.json -w"
   },
   "dependencies": {
@@ -22,24 +26,24 @@
     "@babel/core": "^7.18.13",
     "@babel/preset-typescript": "^7.18.6",
     "@babel/runtime": "^7.18.9",
-    "@rollup/plugin-babel": "^5.3.1",
-    "@rollup/plugin-commonjs": "^22.0.2",
-    "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-typescript": "^8.4.0",
     "@types/chai": "^4.3.1",
+    "@types/fs-extra": "^9.0.13",
     "@types/lodash-es": "^4.17.6",
     "@types/mocha": "^9.1.1",
+    "@types/node": "^18.7.14",
     "chai": "^4.3.6",
     "eslint": "8.22.0",
     "eslint-config-rbower-typescript": "^1.0.8",
     "esno": "^0.16.3",
+    "fs-extra": "^10.1.0",
     "mocha": "^10.0.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-visualizer": "^5.8.0",
-    "typescript": "4.7.4"
+    "typescript": "4.8.2"
   },
   "packageManager": "yarn@3.2.3"
 }
