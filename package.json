@@ -1,5 +1,5 @@
 {
-  "name": "@rbower/facets",
+  "name": "@rbower/facet-search",
   "version": "0.0.0",
   "sideEffects": false,
   "main": "dist/facets.cjs.js",
