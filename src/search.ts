@@ -22,10 +22,10 @@ export interface SearchResult<I extends Item> {
   }
 }
 
-export function search<I extends Item, S extends string>(
-  facets: Facets<I, S>,
-  input: SearchInput<I, S> = {},
-  configuration: Configuration<I, S>,
+export function search<I extends Item>(
+  facets: Facets<I>,
+  input: SearchInput = {},
+  configuration: Configuration,
 ): SearchResult<I> {
   const perPage = input.perPage || 12
   const page = input.page || 1

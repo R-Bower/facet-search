@@ -13,7 +13,7 @@ import {
 /**
  * responsible for making faceted search
  */
-export class Facets<I extends Item, S extends string> {
+export class Facets<I extends Item> {
   private readonly config: Record<string, FilterConfig>
   private readonly facets: FacetData
   private readonly itemsMap: Record<number, I & {_id: number}>
@@ -21,7 +21,7 @@ export class Facets<I extends Item, S extends string> {
   private readonly idsMap: Record<string, number>
   private readonly bitsIds: BitSet
 
-  constructor(items: I[], configuration: Configuration<I, S> = {}) {
+  constructor(items: I[], configuration: Configuration = {}) {
     configuration = configuration || {}
     configuration.filterFields =
       configuration.filterFields || ({} as Record<string, FilterConfig>)
@@ -66,7 +66,7 @@ export class Facets<I extends Item, S extends string> {
    *
    * ids is optional only when there is query
    */
-  search(input: SearchInput<I, S>, data: {queryIds?: BitSet} = {}) {
+  search(input: SearchInput, data: {queryIds?: BitSet} = {}) {
     const config = this.config
 
     // consider removing clone

@@ -10,11 +10,11 @@ import {
   SearchInput,
 } from "./types"
 
-export class FacetSearch<I extends Item, S extends string> {
-  private readonly configuration: Configuration<I, S>
-  private readonly facets: Facets<I, S>
+export class FacetSearch<I extends Item> {
+  private readonly configuration: Configuration
+  private readonly facets: Facets<I>
 
-  constructor(items: I[], configuration: Configuration<I, S>) {
+  constructor(items: I[], configuration: Configuration) {
     this.configuration = configuration
     // "index" the items, which constructs the facets from every item.
     this.facets = new Facets(items, configuration)
@@ -24,7 +24,7 @@ export class FacetSearch<I extends Item, S extends string> {
     return aggregation(this.facets, options, this.configuration)
   }
 
-  search(input: SearchInput<I, S> = {}) {
+  search(input: SearchInput = {}) {
     return search(
       this.facets,
       {

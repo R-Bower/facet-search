@@ -13,10 +13,10 @@ import {
  * returns list of elements in specific facet
  * useful for autocomplete or list all aggregation options
  */
-export function aggregation<I extends Item, S extends string>(
-  facets: Facets<I, S>,
+export function aggregation<I extends Item>(
+  facets: Facets<I>,
   options: AggregationOptions,
-  configuration: Configuration<I, S>,
+  configuration: Configuration,
 ): AggregationResult<I> {
   const perPage = options.perPage || 10
   const page = options.page || 1

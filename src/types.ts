@@ -19,8 +19,8 @@ export interface Pagination {
 
 export type Order = "asc" | "desc"
 
-export interface Sorting<I extends Record<string, unknown>> {
-  field: keyof I | Array<keyof I>
+export interface SortConfig {
+  field: string | string[]
   order?: Order | Order[]
 }
 
@@ -41,7 +41,7 @@ export type FullTextSearchInput = {
   searchableFields: string[]
 }
 
-export interface SearchInput<I extends Item, S extends string> {
+export interface SearchInput {
   filterConfig?: Record<string, FilterConfig>
   filters?: Record<string, FilterValue>
   ids?: number[]
@@ -52,8 +52,7 @@ export interface SearchInput<I extends Item, S extends string> {
   /** @default 12 */
   perPage?: number
   query?: string
-  /** The name of a sort defined in the configuration's sortings, or a new custom one */
-  sort?: S | Sorting<I>
+  sort?: SortConfig
 }
 
 export interface Bucket<I extends Item> {
@@ -83,11 +82,10 @@ export type FilterConfig = {
 }
 
 /** Configuration for FacetSearch */
-export interface Configuration<I extends Item, S extends string> {
+export interface Configuration {
   filterFields?: Record<string, FilterConfig>
   searchableFields?: string[]
-  /** @default [] */
-  sortings?: Record<S, Sorting<I>>
+  sortings?: Record<string, SortConfig>
 }
 
 export type BitDataMap = Record<string, Record<string, number[]>>

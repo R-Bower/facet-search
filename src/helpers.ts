@@ -10,7 +10,7 @@ import {
   IndexFieldsResult,
   Item,
   SearchInput,
-  Sorting,
+  SortConfig,
 } from "./types"
 
 export function combinationIndices(facets: FacetData, filters: any) {
@@ -253,8 +253,8 @@ export function mergeAggregations<A extends string>(
   })
 }
 
-export function inputToFacetFilters<I extends Item, S extends string>(
-  input: SearchInput<I, S>,
+export function inputToFacetFilters(
+  input: SearchInput,
   config: Record<string, FilterConfig>,
 ) {
   const filters: any[] = []
@@ -294,8 +294,8 @@ export function ensureArray<K>(field: K | K[]): K[] {
  */
 export function sortItems<I extends Item, S extends string>(
   items: I[],
-  sort: S | Sorting<I>,
-  sortings?: Record<S, Sorting<I>>,
+  sort: SortConfig,
+  sortings?: Record<S, SortConfig>,
 ): I[] {
   if (typeof sort === "string" && sortings && sortings[sort]) {
     sort = sortings[sort]
