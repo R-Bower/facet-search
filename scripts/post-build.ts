@@ -15,9 +15,10 @@ const files = [
 ]
 
 // Generates TypeScript files for every export format
-async function main() {
+export async function postBuild() {
   if (!existsSync(typesFile)) {
-    return console.error("index.d.ts not found, exiting")
+    console.error("index.d.ts not found, exiting")
+    return false
   }
 
   return Promise.all(
@@ -26,6 +27,6 @@ async function main() {
       return writeFile(path, fileTemplate)
     }),
   )
+    .then(() => true)
+    .catch(() => false)
 }
-
-main()
