@@ -3,9 +3,9 @@ import {resolve} from "path"
 
 const outDir = "dist"
 
-const typesFile = resolve(__dirname, `../${outDir}/index.d.ts`)
+const typesFile = resolve(__dirname, `../${outDir}/types/index.d.ts`)
 
-const fileTemplate = `export * from "../${outDir}/index"\n`
+const fileTemplate = `export * from "../${outDir}/types"\n`
 
 const files = [
   `${outDir}/facets.cjs.d.ts`,

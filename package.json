@@ -7,7 +7,7 @@
   },
   "main": "dist/facets.cjs.js",
   "module": "dist/facets.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist/*"
   ],

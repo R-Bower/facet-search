@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "outFile": "dist/index.d.ts",
+    "outDir": "dist/types",
     "noEmit": false,
     "emitDeclarationOnly": true,
     "sourceMap": true
