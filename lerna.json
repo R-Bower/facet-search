@@ -2,5 +2,8 @@
   "packages": [
     "./"
   ],
-  "version": "independent"
+  "version": "independent",
+  "ignoreChanges": [
+    "scripts/*.ts"
+  ]
 }

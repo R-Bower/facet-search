@@ -14,7 +14,7 @@
   "scripts": {
     "test": "esno node_modules/.bin/mocha tests/**.spec.ts",
     "build": "npm-run-all clean compile-source compile-types generate-type-files",
-    "clean": "rimraf ./build",
+    "clean": "rimraf ./dist",
     "compile-source": "rollup --config rollup.config.js",
     "compile-types": "tsc -P tsconfig.build.json",
     "deploy": "esno scripts/deploy.ts",
