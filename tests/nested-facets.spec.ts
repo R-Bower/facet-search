@@ -22,7 +22,7 @@ type Movie = {
 }
 
 describe("nested facets", () => {
-  const searcher = new FacetSearch<Movie, string>(moviesNested, {
+  const searcher = new FacetSearch<Movie>(moviesNested, {
     filterFields: {
       description: {
         field: "details.description",

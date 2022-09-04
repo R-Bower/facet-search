@@ -1,11 +1,10 @@
 import {expect} from "chai"
 
-import {FacetSearch} from "../src"
-import {Configuration} from "../src/types"
+import {Configuration, FacetSearch} from "../src"
 import items from "./fixtures/items.json"
 
 describe("search", () => {
-  const configuration: Configuration<typeof items[0], string> = {
+  const configuration: Configuration = {
     filterFields: {
       actors: {},
       category: {},
