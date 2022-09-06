@@ -1,0 +1,126 @@
+[
+  {
+    "movieId": 1,
+    "name": "movie1",
+    "tags": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "actors": [
+      "john",
+      "alex"
+    ],
+    "year": 1995,
+    "in_cinema": false,
+    "category": "drama",
+    "viewers": [
+      {
+        "id": 1,
+        "firstName": "Mindy",
+        "lastName": "MacInnes",
+        "email": "mmacinnes0@bigcartel.com"
+      },
+      {
+        "id": 4,
+        "firstName": "Fanechka",
+        "lastName": "Vannoni",
+        "email": "fvannoni3@goo.ne.jp"
+      },
+      {
+        "id": 5,
+        "firstName": "Renata",
+        "lastName": "Batkin",
+        "email": "rbatkin4@plala.or.jp"
+      }
+    ]
+  },
+  {
+    "movieId": 2,
+    "name": "movie2",
+    "tags": [
+      "a",
+      "e",
+      "f"
+    ],
+    "actors": [
+      "john",
+      "brad"
+    ],
+    "year": 1996,
+    "in_cinema": false,
+    "category": "comedy",
+    "viewers": [
+      {
+        "id": 1,
+        "firstName": "Mindy",
+        "lastName": "MacInnes",
+        "email": "mmacinnes0@bigcartel.com"
+      },
+      {
+        "id": 3,
+        "firstName": "Fedora",
+        "lastName": "Dadswell",
+        "email": "fdadswell2@gnu.org"
+      }
+    ]
+  },
+  {
+    "movieId": 3,
+    "name": "movie3",
+    "tags": [
+      "a",
+      "c"
+    ],
+    "actors": [
+      "jeff"
+    ],
+    "year": 1994,
+    "in_cinema": false,
+    "category": "comedy",
+    "viewers": [
+      {
+        "id": 5,
+        "firstName": "Renata",
+        "lastName": "Batkin",
+        "email": "rbatkin4@plala.or.jp"
+      },
+      {
+        "id": 6,
+        "firstName": "Orion",
+        "lastName": "Laborda",
+        "email": "olaborda5@taobao.com"
+      }
+    ]
+  },
+  {
+    "movieId": 4,
+    "name": "movie4",
+    "tags": [
+      "c",
+      "a",
+      "z"
+    ],
+    "actors": [
+      "jean"
+    ],
+    "year": 1993,
+    "in_cinema": true,
+    "category": "drama",
+    "viewers": [
+      {
+        "id": 4,
+        "firstName": "Fanechka",
+        "lastName": "Vannoni",
+        "email": "fvannoni3@goo.ne.jp"
+      },
+      {
+        "id": 6,
+        "firstName": "Orion",
+        "lastName": "Laborda",
+        "email": "olaborda5@taobao.com"
+      }
+    ]
+  }
+]

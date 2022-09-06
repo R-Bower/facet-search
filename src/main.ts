@@ -1,6 +1,6 @@
 import {aggregation} from "./aggregation"
 import {Facets} from "./facets"
-import {mergeAggregations} from "./helpers"
+import {mergeFilterConfigs} from "./helpers"
 import {search} from "./search"
 import {
   AggregationOptions,
@@ -29,7 +29,7 @@ export class FacetSearch<I extends Item> {
       this.facets,
       {
         ...input,
-        filterConfig: mergeAggregations(
+        filterConfig: mergeFilterConfigs(
           this.configuration.filterFields ?? {},
           input.filters,
         ),

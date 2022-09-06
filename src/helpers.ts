@@ -1,13 +1,11 @@
 import BitSet from "bitset"
-import {chain, clone, get, mapValues, orderBy, sortBy} from "lodash"
+import {clone, get, mapValues, orderBy} from "lodash"
 
 import {
-  BitDataMap,
   BitSetDataMap,
   FacetData,
   FilterConfig,
   FilterValue,
-  IndexFieldsResult,
   Item,
   SearchInput,
   SortConfig,
@@ -123,86 +121,6 @@ export function matrix(
   return tempFacet
 }
 
-export function buildFacets<I extends Item>(
-  items: I[],
-  fields: string[],
-): IndexFieldsResult<I> {
-  fields = fields || []
-
-  const ids: number[] = []
-  const itemsMap: Record<number, I & {_id: number}> = {}
-
-  const facets: FacetData = {
-    bitsData: {} as BitSetDataMap,
-    bitsDataTemp: {} as BitSetDataMap,
-    data: {} as BitDataMap,
-  }
-
-  let i = 1
-  const indexedItems: Array<I & {_id: number}> = chain(items)
-    .map((originalItem: I) => {
-      // add _id
-      const item = {...originalItem, _id: i}
-      ids.push(i)
-      itemsMap[i] = item
-      ++i
-      fields.forEach((field: string) => {
-        if (!facets.data[field]) {
-          facets.data[field] = {}
-        }
-
-        // TODO: check to see how match-sorter does this
-        const fieldValue: any = get(item, field)
-
-        if (Array.isArray(fieldValue)) {
-          fieldValue.forEach((v) => {
-            if (Array.isArray(v)) {
-              return console.error(
-                "Field targets should be simple values, not arrays",
-              )
-            }
-
-            if (typeof v === "object") {
-              return console.error(
-                "Field targets should be simple values, not objects",
-              )
-            }
-
-            if (!facets.data[field][v]) {
-              facets.data[field][v] = []
-            }
-
-            facets.data[field][v].push(item._id)
-          })
-        } else {
-          if (!facets.data[field][fieldValue]) {
-            facets.data[field][fieldValue] = []
-          }
-
-          facets.data[field][fieldValue].push(item._id)
-        }
-      })
-
-      return item
-    })
-    .value()
-
-  facets.data = mapValues(facets.data, function (values, field) {
-    if (!facets.bitsData[field]) {
-      facets.bitsData[field] = {}
-      facets.bitsDataTemp[field] = {}
-    }
-
-    return mapValues(values, function (indexes, filter) {
-      const sortedIndices = sortBy(indexes)
-      facets.bitsData[field][filter] = new BitSet(sortedIndices)
-      return sortedIndices
-    })
-  })
-
-  return {facets, ids, indexedItems, itemsMap}
-}
-
 /**
  * calculates ids for facets
  * if there is no facet input then return null to not save resources for OR calculation
@@ -221,7 +139,14 @@ export function facetIds(
       filterValues.forEach((filter) => {
         ++i
         const filterConfig = filterFields[key]
-        output = output.or(get(facetData, filterConfig?.field || key)[filter])
+        const targetField = get(facetData, filterConfig?.field || key)
+
+        if (!targetField) {
+          throw new Error(
+            "Missing field for filter.  Did you forget to include it in the filterFields config?",
+          )
+        }
+        output = output.or(targetField[filter])
       })
     }
   })
@@ -233,7 +158,7 @@ export function facetIds(
   return output
 }
 
-export function mergeAggregations<A extends string>(
+export function mergeFilterConfigs<A extends string>(
   aggregations: Record<A, FilterConfig>,
   inputFilters?: Record<string, FilterValue>,
 ) {

@@ -1,6 +1,7 @@
 import {expect} from "chai"
 
-import {buildFacets, combinationIndices, matrix} from "../src/helpers"
+import {buildFacets} from "../src/build-facets"
+import {combinationIndices, matrix} from "../src/helpers"
 
 describe("filtering and generating facets with matrix (9 rows in dataset)", () => {
   const items = [

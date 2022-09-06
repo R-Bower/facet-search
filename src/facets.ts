@@ -1,7 +1,8 @@
 import BitSet from "bitset"
 import {clone, mapValues} from "lodash"
 
-import {buildFacets, facetIds, inputToFacetFilters, matrix} from "./helpers"
+import {buildFacets} from "./build-facets"
+import {facetIds, inputToFacetFilters, matrix} from "./helpers"
 import {
   Configuration,
   FacetData,
