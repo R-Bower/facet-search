@@ -25,7 +25,10 @@ async function promptForChoice(message: string): Promise<string> {
 }
 
 async function deploy(): Promise<void> {
-  await execaCommand("yarn build", {stdio: "inherit"})
+  const build = await promptForChoice("Build?")
+  if (build === Choices.Yes) {
+    await execaCommand("yarn build", {stdio: "inherit"})
+  }
 
   const updateVersion = await promptForChoice("Update version?")
   if (updateVersion === Choices.Yes) {
