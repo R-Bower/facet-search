@@ -1,4 +1,4 @@
-import {clone} from "lodash-es"
+import {clone} from "lodash"
 
 import {Facets} from "./facets"
 import {search} from "./search"

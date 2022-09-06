@@ -1,4 +1,4 @@
-import {chain, mapValues, orderBy} from "lodash-es"
+import {chain, mapValues, orderBy} from "lodash"
 
 import {ensureArray} from "./helpers"
 import {

@@ -1,5 +1,5 @@
 import BitSet from "bitset"
-import {chain, clone, get, mapValues, orderBy, sortBy} from "lodash-es"
+import {chain, clone, get, mapValues, orderBy, sortBy} from "lodash"
 
 import {
   BitDataMap,

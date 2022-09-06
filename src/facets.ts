@@ -1,5 +1,5 @@
 import BitSet from "bitset"
-import {clone, mapValues} from "lodash-es"
+import {clone, mapValues} from "lodash"
 
 import {buildFacets, facetIds, inputToFacetFilters, matrix} from "./helpers"
 import {
